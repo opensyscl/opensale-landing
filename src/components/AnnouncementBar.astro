@@ -1,0 +1,58 @@
+---
+/**
+ * Barra de anuncio superior: fondo oscuro con un glow radial (morado -> rosa ->
+ * salmon) que sube desde abajo-centro, texto centrado y una flecha diagonal a
+ * la derecha. Replica del announcement bar de sendr.ai.
+ */
+interface Props {
+  text?: string;
+  href?: string;
+}
+
+const {
+  text = 'Presentamos OpenSale: tu operación de ventas, ahora en un solo lugar',
+  href = '#empezar',
+} = Astro.props;
+---
+
+<a
+  href={href}
+  class="relative z-[1] flex min-h-[52px] w-full items-center justify-center overflow-hidden bg-ink px-12"
+>
+  {/* Glow radial: 984px de ancho, anclado abajo-centro; la barra recorta el resto */}
+  <span
+    aria-hidden="true"
+    class="pointer-events-none absolute bottom-0 left-1/2 h-[640px] w-[984px] max-w-none -translate-x-1/2"
+    style="background: radial-gradient(50% 50% at 50% 112.8%, rgb(156, 128, 232) 0%, rgb(213, 126, 199) 25%, rgb(229, 131, 160) 50%, rgba(243, 150, 117, 0.6) 75%, rgba(28, 26, 21, 0) 100%);"
+  >
+  </span>
+
+  <span class="relative text-center text-[14px] leading-[1.4] font-medium text-white">
+    {text}
+  </span>
+
+  {/* Flecha diagonal hacia arriba-derecha */}
+  <svg
+    viewBox="0 0 24 24"
+    class="absolute right-5 h-5 w-5 shrink-0 text-white/60"
+    fill="none"
+    aria-hidden="true"
+  >
+    <path
+      d="M 0 0 L 10 0 L 10 10"
+      transform="translate(7 7)"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    ></path>
+    <path
+      d="M 0 10 L 10 0"
+      transform="translate(7 7)"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    ></path>
+  </svg>
+</a>

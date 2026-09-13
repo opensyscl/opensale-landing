@@ -1,0 +1,106 @@
+---
+/**
+ * Modal de onboarding con video (replica del modal "Adaptive Visuals" de Uneo).
+ * Card glass oscura centrada sobre un overlay con blur. Se muestra una vez por
+ * navegador (localStorage) y se cierra con el boton, el overlay o Escape.
+ */
+interface Props {
+  title?: string;
+  body?: string;
+  cta?: string;
+  video?: string;
+  poster?: string;
+  /** Clave de localStorage; si se ve, no vuelve a aparecer. */
+  storageKey?: string;
+}
+
+const {
+  title = 'Conocé tu panel de ventas',
+  body = 'Mirá cómo cargar pedidos, controlar el inventario y facturar sin salir de OpenSale.',
+  cta = 'Entendido',
+  video = '/media/adaptive-visual.mp4',
+  poster,
+  storageKey = 'opensale-feature-modal',
+} = Astro.props;
+---
+
+<div
+  id="feature-modal"
+  data-storage-key={storageKey}
+  class="fixed inset-0 z-[9999] hidden items-center justify-center bg-[rgba(230,230,230,0.35)] p-4 backdrop-blur-[8px]"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="feature-modal-title"
+>
+  <div
+    class="flex w-[90%] max-w-[400px] flex-col items-start gap-[30px] rounded-[35px] border border-white/15 bg-[#2e2e2e] p-2.5 text-left shadow-[0_20px_50px_rgba(0,0,0,0.4)]"
+  >
+    <div class="w-full overflow-hidden rounded-[25px]">
+      <video
+        autoplay
+        loop
+        muted
+        playsinline
+        poster={poster}
+        src={video}
+        class="aspect-video w-full rounded-[25px] bg-[#2e2e2e] object-cover"
+      ></video>
+    </div>
+
+    <div class="flex flex-col gap-2.5 px-[15px]">
+      <h2
+        id="feature-modal-title"
+        class="m-0 text-[clamp(1.5rem,4vw,2rem)] font-medium text-white [text-shadow:0_2px_8px_rgba(0,0,0,0.3)]"
+      >
+        {title}
+      </h2>
+      <p class="m-0 text-[14px] leading-[1.6] text-[#d4d4d4]">{body}</p>
+    </div>
+
+    <button
+      type="button"
+      data-modal-close
+      class="w-full cursor-pointer rounded-[23px] border-t border-white/15 bg-[#666] px-4 py-[0.9rem] text-[1.05rem] font-semibold tracking-[0.3px] text-white backdrop-blur-sm transition-colors duration-200 hover:bg-[#777]"
+    >
+      {cta}
+    </button>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById('feature-modal');
+  if (modal) {
+    const key = modal.dataset.storageKey || 'feature-modal';
+    const video = modal.querySelector('video');
+
+    const open = () => {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      video?.play?.().catch(() => {});
+    };
+    const close = () => {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      try {
+        localStorage.setItem(key, '1');
+      } catch {}
+    };
+
+    let seen = false;
+    try {
+      seen = localStorage.getItem(key) === '1';
+    } catch {}
+    if (!seen) open();
+
+    // Cerrar con el boton
+    modal.querySelector('[data-modal-close]')?.addEventListener('click', close);
+    // Cerrar al hacer clic en el overlay (fuera de la card)
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) close();
+    });
+    // Cerrar con Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) close();
+    });
+  }
+</script>

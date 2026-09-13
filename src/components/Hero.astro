@@ -1,0 +1,134 @@
+---
+/**
+ * Hero de dos columnas (replica del template Solva de Framer):
+ *  - Izquierda: badge, titulo serif grande, parrafo y CTA.
+ *  - Derecha: imagen de fondo (flores) + mockup del panel de OpenSale con ring blanco.
+ *  - Abajo: marquee de logos de marcas.
+ */
+import ErpMockup from './ErpMockup.astro';
+
+/** Marcas de clientes (placeholder hasta tener las reales). */
+const logos = [
+  'Corebit',
+  'Lumen Labs',
+  'Aerix',
+  'Flare',
+  'Vault',
+  'Driftwave',
+  'Northstar',
+  'Knot',
+];
+---
+
+<section class="relative overflow-hidden bg-canvas">
+  <div class="mx-auto w-full max-w-[1200px] px-5 pt-10 pb-16 md:px-10 md:pt-16">
+    <div class="flex flex-col items-center gap-12 lg:flex-row lg:items-stretch lg:gap-0">
+      {/* Columna izquierda: texto */}
+      <div class="flex w-full flex-col items-start gap-8 lg:w-[45%] lg:pb-8 lg:pr-10">
+        <div class="flex flex-col items-start gap-6">
+          {/* Badge */}
+          <a
+            href="#automatizaciones"
+            class="group inline-flex items-center gap-2 rounded-md transition-opacity hover:opacity-80"
+          >
+            <span class="rounded-[4px] bg-[#f4f2ec] px-1.5 py-1 text-[12px] leading-none font-medium tracking-wide text-muted">
+              NUEVO
+            </span>
+            <span class="text-[16px] leading-none text-muted">Automatizaciones que venden solas</span>
+            <svg viewBox="0 0 24 24" class="h-4 w-4 text-muted" fill="none" aria-hidden="true">
+              <path
+                d="M5 12h14M13 6l6 6-6 6"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </svg>
+          </a>
+
+          {/* Titulo */}
+          <h1 class="max-w-[600px] font-serif text-[46px] leading-[1.05] font-light tracking-[-0.05em] text-[#0f0f0f] sm:text-[52px] lg:text-[56px]">
+            Toda tu operación de ventas, en un solo lugar.
+          </h1>
+
+          {/* Parrafo */}
+          <p class="max-w-[400px] text-[18px] leading-[1.4] text-muted">
+            OpenSale centraliza pedidos, inventario y facturación, y automatiza lo repetitivo para
+            que tu equipo venda en vez de cargar planillas.
+          </p>
+        </div>
+
+        {/* CTA */}
+        <a
+          href="#empezar"
+          class="inline-flex h-11 items-center justify-center rounded-[10px] bg-ink px-4 text-[14px] font-medium text-canvas transition-colors duration-200 hover:bg-ink/90"
+        >
+          Probar OpenSale gratis
+        </a>
+      </div>
+
+      {/* Columna derecha: imagen + mockup */}
+      <div class="relative h-[360px] w-full overflow-hidden rounded-2xl border-r border-b border-border sm:h-[460px] lg:h-[560px] lg:w-[55%]">
+        {/* Fondo de flores */}
+        <img
+          src="/images/hero/hero-flowers.png"
+          alt=""
+          aria-hidden="true"
+          class="absolute inset-0 h-full w-full object-cover"
+        />
+        {/* Mockup del panel de OpenSale, flotando y desbordando a la derecha */}
+        <div
+          class="absolute top-16 left-16 h-[600px] w-[975px] max-w-none rounded-[10px] shadow-[0_1px_3px_rgba(0,0,0,0.03),0_4px_16px_rgba(0,0,0,0.04),0_0_0_8px_rgba(255,255,255,0.5)]"
+          role="img"
+          aria-label="Panel de OpenSale mostrando ventas y el detalle de un pedido"
+        >
+          <ErpMockup />
+        </div>
+      </div>
+    </div>
+
+    {/* Marquee de logos */}
+    <div class="marquee relative mt-16 overflow-hidden lg:mt-24">
+      <div class="marquee-track flex w-max items-center gap-[72px]">
+        {[...logos, ...logos].map((name) => (
+          <span class="flex shrink-0 items-center gap-2 text-[18px] leading-none font-medium tracking-[-0.03em] text-ink/85">
+            <svg viewBox="0 0 24 24" class="h-6 w-6" fill="currentColor" aria-hidden="true">
+              <path d="M12 2 2 20h20L12 2Zm0 5 5.5 9.9h-11L12 7Z" />
+            </svg>
+            {name}
+          </span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Marquee: desplazamiento continuo con fundido en los bordes */
+  .marquee {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 12%,
+      #000 88%,
+      transparent
+    );
+    mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  }
+
+  .marquee-track {
+    animation: marquee 32s linear infinite;
+  }
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation: none;
+    }
+  }
+</style>

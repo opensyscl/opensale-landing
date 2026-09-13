@@ -1,0 +1,199 @@
+---
+/**
+ * Mockup del panel de OpenSale para el hero: topbar + sidebar de navegación +
+ * lista de pedidos + detalle del pedido. Todo en HTML/CSS (sin imagen), pensado
+ * para verse dentro del marco del hero, desbordando a la derecha.
+ */
+const nav = [
+  { label: 'Inicio', active: false },
+  { label: 'Ventas', active: true },
+  { label: 'Pedidos', active: false },
+  { label: 'Inventario', active: false },
+  { label: 'Facturación', active: false },
+  { label: 'Clientes', active: false },
+  { label: 'Reportes', active: false },
+];
+
+type Estado = 'Pagado' | 'Pendiente' | 'Enviado';
+
+const pedidos: {
+  ini: string;
+  cliente: string;
+  detalle: string;
+  tiempo: string;
+  estado: Estado;
+  sel?: boolean;
+}[] = [
+  { ini: 'CA', cliente: 'Comercial Andes', detalle: 'Pedido #4821 · $184.200', tiempo: 'Ahora', estado: 'Pagado', sel: true },
+  { ini: 'TL', cliente: 'Textiles Lía', detalle: 'Pedido #4820 · $52.900', tiempo: '12m', estado: 'Pendiente' },
+  { ini: 'FS', cliente: 'Ferretería Sur', detalle: 'Pedido #4819 · $97.400', tiempo: '28m', estado: 'Pagado' },
+  { ini: 'DR', cliente: 'Distribuidora RM', detalle: 'Pedido #4818 · $310.000', tiempo: '41m', estado: 'Enviado' },
+  { ini: 'KS', cliente: 'Kiosco El Sol', detalle: 'Pedido #4817 · $18.750', tiempo: '1h', estado: 'Pendiente' },
+  { ini: 'PM', cliente: 'Panadería Mari', detalle: 'Pedido #4816 · $23.100', tiempo: '2h', estado: 'Pagado' },
+  { ini: 'OV', cliente: 'Óptica Vera', detalle: 'Pedido #4815 · $76.500', tiempo: '3h', estado: 'Pagado' },
+  { ini: 'BC', cliente: 'Bazar Central', detalle: 'Pedido #4814 · $41.300', tiempo: '5h', estado: 'Pendiente' },
+];
+
+const items = [
+  { nombre: 'Cemento Portland 25kg', cant: '40 u', precio: '$118.000' },
+  { nombre: 'Malla electrosoldada 6mm', cant: '12 u', precio: '$46.200' },
+  { nombre: 'Alambre recocido 2mm', cant: '8 u', precio: '$20.000' },
+];
+
+const estadoDot: Record<Estado, string> = {
+  Pagado: 'bg-success',
+  Enviado: 'bg-ink/40',
+  Pendiente: 'bg-warning',
+};
+---
+
+<div class="flex h-full w-full flex-col overflow-hidden rounded-[10px] bg-surface text-ink">
+  {/* Topbar */}
+  <div class="flex h-[60px] shrink-0 items-center border-b border-border/70 pr-5">
+    <div class="flex h-full w-[220px] shrink-0 items-center gap-2 px-5">
+      <span class="flex h-6 w-6 items-center justify-center rounded-[5px] bg-ink">
+        <svg viewBox="0 0 16 14" class="h-3.5 w-4" aria-hidden="true">
+          <rect x="0" y="8" width="4" height="6" rx="1.2" fill="#fbfaf6" />
+          <rect x="6" y="4" width="4" height="10" rx="1.2" fill="#fbfaf6" />
+          <rect x="12" y="0" width="4" height="14" rx="1.2" fill="#fbfaf6" />
+        </svg>
+      </span>
+      <span class="text-[16px] font-semibold tracking-[-0.02em]">OpenSale</span>
+    </div>
+    <div class="flex items-center gap-1.5 pl-2 text-[16px] font-medium">
+      Ventas
+      <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 text-muted" fill="none" aria-hidden="true">
+        <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </div>
+    <div class="ml-auto flex items-center gap-3">
+      <div class="flex h-9 w-[220px] items-center gap-2 rounded-lg border border-border/80 px-3 text-[13px] text-muted">
+        <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
+          <path d="M20 20l-3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        Buscar
+        <span class="ml-auto rounded border border-border px-1 text-[11px]">⌘K</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="flex h-9 w-9 items-center justify-center rounded-full bg-ink text-[12px] font-semibold text-canvas">JP</span>
+        <div class="leading-tight">
+          <div class="text-[13px] font-medium">José Pérez</div>
+          <div class="text-[11px] text-muted">Admin</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* Cuerpo */}
+  <div class="flex min-h-0 flex-1">
+    {/* Sidebar */}
+    <aside class="flex w-[220px] shrink-0 flex-col border-r border-border/70 p-3">
+      <div class="flex flex-col gap-0.5">
+        {nav.map((item) => (
+          <div
+            class={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-[14px] ${item.active ? 'bg-ink/[0.06] font-medium text-ink' : 'text-muted'}`}
+          >
+            <span class={`h-4 w-4 rounded-[5px] ${item.active ? 'bg-ink' : 'border border-current opacity-60'}`}></span>
+            {item.label}
+            {item.active && (
+              <svg viewBox="0 0 24 24" class="ml-auto h-4 w-4 text-muted" fill="none" aria-hidden="true">
+                <path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            )}
+          </div>
+        ))}
+      </div>
+      <div class="mt-auto flex flex-col gap-0.5 border-t border-border/70 pt-3">
+        <div class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[14px] text-muted">
+          <span class="h-4 w-4 rounded-[5px] border border-current opacity-60"></span>
+          Configuración
+        </div>
+        <div class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[14px] text-muted">
+          <span class="h-4 w-4 rounded-[5px] border border-current opacity-60"></span>
+          Salir
+        </div>
+      </div>
+    </aside>
+
+    {/* Lista de pedidos */}
+    <div class="flex w-[340px] shrink-0 flex-col border-r border-border/70">
+      <div class="p-3">
+        <div class="flex h-10 items-center gap-2 rounded-xl bg-ink/[0.03] px-3 text-[13px] text-muted">
+          <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" />
+            <path d="M20 20l-3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+          Buscar pedidos
+        </div>
+      </div>
+      <div class="flex flex-col gap-0.5 px-2">
+        {pedidos.map((p) => (
+          <div class={`flex items-center gap-3 rounded-xl px-2.5 py-2.5 ${p.sel ? 'bg-ink/[0.05]' : ''}`}>
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink/[0.06] text-[12px] font-medium text-muted">
+              {p.ini}
+            </span>
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center justify-between">
+                <span class="truncate text-[14px] font-medium">{p.cliente}</span>
+                <span class="ml-2 shrink-0 text-[12px] text-muted">{p.tiempo}</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="truncate text-[13px] text-muted">{p.detalle}</span>
+                <span class={`ml-2 h-2 w-2 shrink-0 rounded-full ${estadoDot[p.estado]}`}></span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Detalle del pedido */}
+    <div class="flex min-w-0 flex-1 flex-col">
+      <div class="flex items-center gap-3 border-b border-border/70 px-6 py-4">
+        <span class="flex h-10 w-10 items-center justify-center rounded-full bg-ink/[0.06] text-[13px] font-medium text-muted">CA</span>
+        <div class="flex-1">
+          <div class="text-[15px] font-semibold">Comercial Andes</div>
+          <div class="text-[12px] text-muted">Pedido #4821 · 3 productos</div>
+        </div>
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-1 text-[12px] font-medium text-success">
+          <span class="h-1.5 w-1.5 rounded-full bg-success"></span>
+          Pagado
+        </span>
+      </div>
+
+      <div class="flex-1 px-6 py-5">
+        <div class="text-[12px] font-medium tracking-wide text-muted uppercase">Detalle</div>
+        <div class="mt-3 overflow-hidden rounded-xl border border-border/70">
+          {items.map((it, i) => (
+            <div class={`flex items-center gap-3 px-4 py-3 ${i > 0 ? 'border-t border-border/70' : ''}`}>
+              <span class="h-8 w-8 shrink-0 rounded-lg bg-ink/[0.05]"></span>
+              <span class="flex-1 text-[14px]">{it.nombre}</span>
+              <span class="text-[13px] text-muted">{it.cant}</span>
+              <span class="w-24 text-right text-[14px] font-medium">{it.precio}</span>
+            </div>
+          ))}
+        </div>
+
+        <div class="mt-4 flex items-center justify-between rounded-xl bg-ink/[0.03] px-4 py-3">
+          <span class="text-[14px] font-medium">Total</span>
+          <span class="text-[17px] font-semibold">$184.200</span>
+        </div>
+
+        <div class="mt-5 flex items-center gap-2">
+          <span class="h-2 w-2 rounded-full bg-success"></span>
+          <span class="text-[13px] text-muted">Facturado y pagado · Comprobante enviado a andes@correo.com</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 border-t border-border/70 px-6 py-4">
+        <div class="flex h-11 flex-1 items-center rounded-full border border-border/80 px-4 text-[14px] text-muted">
+          Agregar nota al pedido…
+        </div>
+        <button class="flex h-11 items-center rounded-full bg-ink px-5 text-[14px] font-medium text-canvas">
+          Enviar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

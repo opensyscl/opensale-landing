@@ -23,6 +23,29 @@
   font-display: swap;
 }
 
+/* Sentient — serif de display para titulares */
+@font-face {
+  font-family: 'Sentient';
+  src: url('/fonts/sentient-300.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Sentient';
+  src: url('/fonts/sentient-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Sentient';
+  src: url('/fonts/sentient-300-italic.woff2') format('woff2');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
 @theme {
   /* Superficies */
   --color-canvas: #fbfaf6;
@@ -34,9 +57,12 @@
   --color-primary-foreground: #fbfaf6;
   --color-muted: #56524a;
   --color-border: #e4e4e1;
+  --color-success: #3f9e6f;
+  --color-warning: #c2872a;
 
   /* Tipografia */
   --font-sans: 'Onest', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Sentient', ui-serif, Georgia, 'Times New Roman', serif;
 
   /* Ritmo */
   --spacing-header: 76px;
