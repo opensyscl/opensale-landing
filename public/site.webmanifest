@@ -1,0 +1,12 @@
+{
+  "name": "OpenSale",
+  "short_name": "OpenSale",
+  "description": "Landing de OpenSale.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbfaf6",
+  "theme_color": "#fbfaf6",
+  "icons": [
+    { "src": "/favicon.svg", "type": "image/svg+xml", "sizes": "any" }
+  ]
+}

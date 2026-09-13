@@ -1,0 +1,63 @@
+@import 'tailwindcss';
+
+/* Onest — self-hosted, servido desde /public/fonts */
+@font-face {
+  font-family: 'Onest';
+  src: url('/fonts/onest-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Onest';
+  src: url('/fonts/onest-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Onest';
+  src: url('/fonts/onest-700.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  /* Superficies */
+  --color-canvas: #fbfaf6;
+  --color-surface: #ffffff;
+  --color-ink: #1c1a15;
+
+  /* Semanticos */
+  --color-primary: #1c1a15;
+  --color-primary-foreground: #fbfaf6;
+  --color-muted: #56524a;
+  --color-border: #e4e4e1;
+
+  /* Tipografia */
+  --font-sans: 'Onest', ui-sans-serif, system-ui, sans-serif;
+
+  /* Ritmo */
+  --spacing-header: 76px;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: var(--color-ink);
+    color: var(--color-canvas);
+  }
+}
