@@ -2,10 +2,10 @@
 /**
  * Hero de dos columnas (replica del template Solva de Framer):
  *  - Izquierda: badge, titulo serif grande, parrafo y CTA.
- *  - Derecha: imagen de fondo (flores) + mockup del panel de OpenSale con ring blanco.
+ *  - Derecha: imagen de fondo (flores) + captura real del panel, con ring blanco.
  *  - Abajo: marquee de logos de marcas.
+ *  - Fondo: halftone animado en canvas 2D, a todo lo ancho de la seccion.
  */
-import ErpMockup from './ErpMockup.astro';
 
 /** Marcas de clientes (placeholder hasta tener las reales). */
 const logos = [
@@ -21,7 +21,10 @@ const logos = [
 ---
 
 <section class="relative overflow-hidden bg-canvas">
-  <div class="mx-auto w-full max-w-[1200px] px-5 pt-10 pb-16 md:px-10 md:pt-16">
+  {/* Halftone animado de fondo: textura a todo lo ancho, detras del contenido */}
+  <canvas id="hero-halftone" class="hero-halftone" aria-hidden="true"></canvas>
+
+  <div class="relative mx-auto w-full max-w-[1200px] px-5 pt-10 pb-16 md:px-10 md:pt-16">
     <div class="flex flex-col items-center gap-12 lg:flex-row lg:items-stretch lg:gap-0">
       {/* Columna izquierda: texto */}
       <div class="flex w-full flex-col items-start gap-8 lg:w-[45%] lg:pb-8 lg:pr-10">
@@ -61,7 +64,7 @@ const logos = [
         {/* CTA */}
         <a
           href="#empezar"
-          class="inline-flex h-11 items-center justify-center rounded-[10px] bg-ink px-4 text-[14px] font-medium text-canvas transition-colors duration-200 hover:bg-ink/90"
+          class="boton-relieve inline-flex h-11 items-center justify-center rounded-lg bg-accent-deep px-4 text-[14px] font-medium text-canvas transition-colors duration-200 hover:bg-accent-deep/90"
         >
           Probar OpenSale gratis
         </a>
@@ -76,14 +79,19 @@ const logos = [
           aria-hidden="true"
           class="absolute inset-0 h-full w-full object-cover"
         />
-        {/* Mockup del panel de OpenSale, flotando y desbordando a la derecha */}
-        <div
-          class="absolute top-16 left-16 h-[600px] w-[975px] max-w-none rounded-[10px] shadow-[0_1px_3px_rgba(0,0,0,0.03),0_4px_16px_rgba(0,0,0,0.04),0_0_0_8px_rgba(255,255,255,0.5)]"
-          role="img"
-          aria-label="Panel de OpenSale mostrando ventas y el detalle de un pedido"
-        >
-          <ErpMockup />
-        </div>
+        {/*
+          Captura real del Panel de Control del ERP, flotando y desbordando a la
+          derecha. Reemplaza al mockup dibujado a mano que habia antes: en el
+          hero conviene mostrar el producto de verdad.
+        */}
+        <img
+          src="/images/producto/panel.webp"
+          width="1600"
+          height="792"
+          decoding="async"
+          alt="Panel de control de OpenSale con ingresos, margen, ventas por hora y estado de caja"
+          class="absolute top-16 left-16 w-[975px] max-w-none rounded-[10px] shadow-[0_1px_3px_rgba(0,0,0,0.03),0_4px_16px_rgba(0,0,0,0.04),0_0_0_8px_rgba(255,255,255,0.5)]"
+        />
       </div>
     </div>
 
@@ -104,6 +112,26 @@ const logos = [
 </section>
 
 <style>
+  /*
+   * El halftone vive en los margenes: la mascara radial abre un hueco sobre la
+   * columna de texto (centro en 26% 44%, que es donde cae el bloque titulo +
+   * parrafo + CTA) y recien afuera deja aparecer los puntos. El degradado es
+   * largo a proposito, asi el borde del hueco no se ve como un corte.
+   *
+   * Una sola capa de mascara: con dos + mask-composite, Lightning CSS descarta
+   * la regla entera y el canvas queda sin posicionar.
+   */
+  .hero-halftone {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.34;
+    -webkit-mask-image: radial-gradient(ellipse 46% 52% at 26% 44%, transparent 48%, #000 92%);
+    mask-image: radial-gradient(ellipse 46% 52% at 26% 44%, transparent 48%, #000 92%);
+  }
+
   /* Marquee: desplazamiento continuo con fundido en los bordes */
   .marquee {
     -webkit-mask-image: linear-gradient(
@@ -132,3 +160,27 @@ const logos = [
     }
   }
 </style>
+
+<script>
+  import { halftone } from '../scripts/halftone';
+
+  const canvas = document.getElementById('hero-halftone');
+  if (canvas instanceof HTMLCanvasElement) {
+    // El color sale del token, asi el halftone sigue a la marca sin hex sueltos.
+    const accent = getComputedStyle(document.documentElement)
+      .getPropertyValue('--color-accent')
+      .trim();
+
+    halftone(canvas, {
+      color: accent || undefined,
+      spacing: 20,
+      dot: 3.1,
+      scale: 0.85,
+      speed: 0.9,
+      // Umbrales anchos: la banda de la onda cubre casi todo el cuadro en vez
+      // de dejar medio hero vacio cuando la cresta se corre para afuera.
+      umbralBajo: -0.55,
+      umbralAlto: 0.85,
+    });
+  }
+</script>
