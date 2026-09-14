@@ -1,0 +1,306 @@
+---
+/**
+ * Seccion de precios de la home: resumen de los planes, con el detalle completo
+ * en /precios.
+ *
+ * Los numeros salen de src/data/planes.ts (derivado del PlanSeeder del ERP).
+ * Aca solo vive lo editorial: que tres o cuatro modulos destacar por plan, que
+ * es una decision de comunicacion y no un dato del seeder.
+ *
+ * El switch no recarga ni pide JS para el primer render: cada tarjeta trae los
+ * dos precios en el HTML y el data-moneda de la seccion decide cual se muestra.
+ * Sin JS queda en CLP, que es el default.
+ */
+import { planes as datos } from '../data/planes';
+
+/**
+ * El ERP cobra solo en CLP (Plan::$currency es CLP o UF, nunca USD), asi que el
+ * precio en dolares es referencial y sale de esta unica tasa. Es el unico numero
+ * de esta seccion que no viene del seeder.
+ */
+const CLP_POR_USD = 950;
+
+/** 9990 -> "9.990", sin depender de que el build tenga ICU completo. */
+const miles = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+const enClp = (n: number) => (n === 0 ? 'Gratis' : `$${miles(n)}`);
+const enUsd = (n: number) => (n === 0 ? 'Gratis' : `US$${Math.round(n / CLP_POR_USD)}`);
+
+/** Lo editorial: que destacar de cada plan en el resumen de la home. */
+const destacados: Record<string, string[]> = {
+  starter: ['Punto de venta', 'Apertura y cierre de caja', 'Inventario', 'Dashboard'],
+  business: [
+    'Todo lo de Starter',
+    'Reportes y ranking de ventas',
+    'Terminales de venta',
+    'Compras y proveedores',
+    'Packs de productos',
+    'Pagos y gastos',
+    'Equipo y permisos',
+  ],
+  growth: [
+    'Todo lo de Business',
+    'Capital e inversiones',
+    'Cotizaciones y pedidos',
+    'Catalogo y etiquetas',
+    'Mermas y consumos',
+    'Rutas de reparto',
+  ],
+  enterprise: [
+    'Todo lo de Growth',
+    'Tareas y proyectos',
+    'Turnos y asistencia',
+    'Acceso a la API',
+    'Integraciones a medida',
+  ],
+};
+
+const limitesDe = (p: (typeof datos)[number]) =>
+  p.limites.usuarios === 'Sin tope'
+    ? 'Usuarios, productos y sucursales sin tope'
+    : `${p.limites.usuarios} ${p.limites.usuarios === '1' ? 'usuario' : 'usuarios'} · ` +
+      `${p.limites.productos} productos · ` +
+      `${p.limites.sucursales} ${p.limites.sucursales === '1' ? 'sucursal' : 'sucursales'}`;
+
+const planes = datos
+  .filter((p) => p.slug !== 'routes')
+  .map((p) => ({
+    nombre: p.nombre,
+    bajada: p.bajada,
+    precio: p.precio,
+    limites: limitesDe(p),
+    puntos: destacados[p.slug] ?? [],
+    soporte: `*Soporte ${p.soporte.toLowerCase()}`,
+    cta: p.slug === 'enterprise' ? 'Hablemos' : 'Empezar',
+    destacado: p.slug === 'enterprise',
+  }));
+
+/**
+ * Routes queda fuera de la grilla a proposito: no es un escalon mas de la
+ * escalera. Cuesta mas que Business pero trae menos (sin POS, sin ventas, sin
+ * reportes) porque apunta a otro negocio, el de distribucion. Meterlo en la
+ * fila rompe la progresion de precio y confunde.
+ */
+const base = datos.find((p) => p.slug === 'routes')!;
+const routes = {
+  nombre: base.nombre,
+  bajada: base.bajada,
+  precio: base.precio,
+  limites: limitesDe(base),
+};
+---
+
+<section id="precios" class="precios relative overflow-hidden" data-moneda="clp">
+  <div class="mx-auto flex w-full max-w-[1200px] flex-col items-center px-5 py-16 md:px-10 lg:py-20">
+    {/* Encabezado */}
+    <h2 class="max-w-[640px] text-center font-serif text-[26px] leading-[1.05] font-light tracking-[-0.05em] text-ink sm:text-[30px] lg:text-[34px]">
+      Precios sin letra chica
+    </h2>
+    <p class="mt-3 max-w-[440px] text-center text-[14px] leading-[1.4] text-muted">
+      Empezá gratis y subí de plan cuando lo necesites. Sin contratos ni costos de instalación.
+    </p>
+
+    {/* Switch de moneda */}
+    <div
+      class="mt-6 inline-flex items-center gap-1 rounded-full bg-ink/[0.05] p-1"
+      role="group"
+      aria-label="Moneda"
+    >
+      <button
+        type="button"
+        data-moneda-opcion="clp"
+        aria-pressed="true"
+        class="opcion-clp rounded-full px-3.5 py-1.5 text-[12px] font-medium text-muted transition-colors duration-200"
+      >
+        CLP
+      </button>
+      <button
+        type="button"
+        data-moneda-opcion="usd"
+        aria-pressed="false"
+        class="opcion-usd rounded-full px-3.5 py-1.5 text-[12px] font-medium text-muted transition-colors duration-200"
+      >
+        USD
+      </button>
+    </div>
+
+    {/* Planes */}
+    <div class="mt-10 grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {planes.map((p) => (
+        <div
+          class:list={[
+            'relative flex flex-col overflow-hidden rounded-3xl border border-border bg-surface p-6',
+            p.destacado && 'grano',
+          ]}
+        >
+          {/*
+            Solo el plan destacado lleva la acuarela, como en el referente: si
+            la llevaran las cuatro dejaria de destacar nada. Sangra por abajo a
+            la derecha y la mascara la disuelve hacia el texto.
+          */}
+          {p.destacado && (
+            <img
+              src="/images/pricing/flores.webp"
+              width="420"
+              height="594"
+              loading="lazy"
+              decoding="async"
+              alt=""
+              aria-hidden="true"
+              class="flores pointer-events-none absolute inset-y-0 right-0 h-full w-auto"
+            />
+          )}
+
+          <h3 class="relative font-serif text-[17px] leading-[1.1] font-normal tracking-[-0.03em] text-ink">
+            {p.nombre}
+          </h3>
+          <p class="relative mt-1 min-h-[34px] text-[12px] leading-[1.4] text-muted">{p.bajada}</p>
+
+          {/* Precio */}
+          <div class="relative mt-5 flex items-baseline gap-1.5">
+            <span class="text-[28px] leading-none font-medium tracking-[-0.04em] text-ink">
+              <span class="moneda-clp">{enClp(p.precio)}</span><span class="moneda-usd">{enUsd(p.precio)}</span>
+            </span>
+            {p.precio > 0 && <span class="text-[13px] text-muted">/mes</span>}
+          </div>
+          <p class="relative mt-2 text-[12px] leading-[1.4] text-muted">{p.limites}</p>
+
+          {/* Que incluye */}
+          <ul class="relative mt-5 flex flex-col gap-2 border-t border-border pt-5">
+            {p.puntos.map((punto) => (
+              <li class="flex items-start gap-2.5">
+                <svg viewBox="0 0 20 20" class="mt-[3px] h-[14px] w-[14px] shrink-0" aria-hidden="true">
+                  <circle cx="10" cy="10" r="10" class="fill-accent/15" />
+                  <path
+                    d="m5.8 10.3 2.7 2.7 5.7-5.7"
+                    fill="none"
+                    class="stroke-accent-deep"
+                    stroke-width="2.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                <span class="text-[12px] leading-[1.5] text-ink">{punto}</span>
+              </li>
+            ))}
+          </ul>
+
+          {/* La nota empuja el CTA al piso para que los cuatro botones queden alineados */}
+          <p class="relative mt-auto pt-6 text-[11px] leading-[1.4] text-muted">{p.soporte}</p>
+
+          <a
+            href="#empezar"
+            class={`relative mt-3 flex h-9 items-center justify-center gap-2 rounded-lg text-[12px] font-medium transition-colors duration-200 ${
+              p.destacado
+                ? 'boton-relieve bg-accent-deep text-canvas hover:bg-accent-deep/90'
+                : 'bg-accent/15 text-ink hover:bg-accent/25'
+            }`}
+          >
+            {p.cta}
+            {!p.destacado && (
+              <svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" aria-hidden="true">
+                <path
+                  d="M5 12h14M13 6l6 6-6 6"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                ></path>
+              </svg>
+            )}
+          </a>
+        </div>
+      ))}
+    </div>
+
+    {/* Routes: plan aparte, para otro tipo de negocio */}
+    <div class="mt-4 flex w-full flex-col items-start gap-4 rounded-3xl border border-border bg-surface p-6 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h3 class="font-serif text-[16px] leading-[1.1] font-normal tracking-[-0.03em] text-ink">
+          {routes.nombre}
+        </h3>
+        <p class="mt-1 text-[12px] leading-[1.4] text-muted">
+          {routes.bajada} · {routes.limites}
+        </p>
+      </div>
+
+      <div class="flex shrink-0 items-center gap-5">
+        <div class="flex items-baseline gap-1.5">
+          <span class="text-[20px] leading-none font-medium tracking-[-0.04em] text-ink">
+            <span class="moneda-clp">{enClp(routes.precio)}</span><span class="moneda-usd">{enUsd(routes.precio)}</span>
+          </span>
+          <span class="text-[12px] text-muted">/mes</span>
+        </div>
+        <a
+          href="#empezar"
+          class="flex h-9 items-center justify-center rounded-lg bg-accent/15 px-4 text-[12px] font-medium text-ink transition-colors duration-200 hover:bg-accent/25"
+        >
+          Empezar
+        </a>
+      </div>
+    </div>
+
+    <p class="mt-6 text-center text-[12px] leading-[1.4] text-muted">
+      <span class="moneda-usd">Precios en USD referenciales; el cobro se hace en CLP. </span>
+      Todos los planes se facturan por mes, sin permanencia.
+    </p>
+  </div>
+</section>
+
+<style>
+  /*
+   * El lavado de color crece hacia abajo y vuelve a transparente antes del
+   * borde: si termina en su maximo corta en seco contra la seccion siguiente.
+   * Va directo en la seccion, no hay otro fondo que pisar.
+   */
+  .precios {
+    background: linear-gradient(
+      to bottom,
+      transparent 30%,
+      color-mix(in srgb, var(--color-accent) 14%, transparent) 78%,
+      transparent 100%
+    );
+  }
+
+  /*
+   * La acuarela cubre el alto de la tarjeta por la derecha. En una grilla de 4
+   * columnas la tarjeta mide ~250px, asi que la mascara tiene que disolverla
+   * rapido o se come el texto. Una sola capa: con dos + mask-composite,
+   * Lightning CSS descarta la regla entera.
+   */
+  .flores {
+    opacity: 0.75;
+    -webkit-mask-image: linear-gradient(to left, #000 0%, transparent 58%);
+    mask-image: linear-gradient(to left, #000 0%, transparent 58%);
+  }
+
+  /* El switch: se muestra un precio u otro segun el data-moneda de la seccion. */
+  [data-moneda='clp'] .moneda-usd,
+  [data-moneda='usd'] .moneda-clp {
+    display: none;
+  }
+
+  /* La opcion activa sube a pastilla blanca. */
+  [data-moneda='clp'] .opcion-clp,
+  [data-moneda='usd'] .opcion-usd {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    box-shadow: 0 1px 2px rgb(28 26 21 / 0.08);
+  }
+</style>
+
+<script>
+  const seccion = document.getElementById('precios');
+
+  seccion?.querySelectorAll<HTMLButtonElement>('[data-moneda-opcion]').forEach((boton) => {
+    boton.addEventListener('click', () => {
+      const elegida = boton.dataset.monedaOpcion;
+      if (!elegida) return;
+
+      seccion.dataset.moneda = elegida;
+      seccion.querySelectorAll<HTMLButtonElement>('[data-moneda-opcion]').forEach((otro) => {
+        otro.setAttribute('aria-pressed', String(otro.dataset.monedaOpcion === elegida));
+      });
+    });
+  });
+</script>

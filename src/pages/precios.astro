@@ -1,0 +1,361 @@
+---
+/**
+ * Pagina de precios (replica de /pricing del template Solva): hero con las
+ * tarjetas, tabla comparativa y el mismo cierre que la home.
+ *
+ * Todo sale de src/data/planes.ts, que a su vez sale del PlanSeeder del ERP.
+ * Los cinco planes reales entran tal cual: los cuatro de la escalera en la
+ * grilla y Routes en su franja aparte, porque no es un escalon mas.
+ */
+import Base from '../layouts/Base.astro';
+import AnnouncementBar from '../components/AnnouncementBar.astro';
+import Header from '../components/react/Header';
+import Cierre from '../components/Cierre.astro';
+import { planes, grupos } from '../data/planes';
+
+/** Ver Pricing.astro: el ERP cobra solo en CLP, el dolar es referencial. */
+const CLP_POR_USD = 950;
+const miles = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+const enClp = (n: number) => (n === 0 ? 'Gratis' : `$${miles(n)}`);
+const enUsd = (n: number) => (n === 0 ? 'Gratis' : `US$${Math.round(n / CLP_POR_USD)}`);
+
+const escalera = planes.filter((p) => p.slug !== 'routes');
+const routes = planes.find((p) => p.slug === 'routes')!;
+
+/** El plan del medio lleva la acuarela y el boton solido, como el Pro del referente. */
+const DESTACADO = 'growth';
+
+/**
+ * Columnas de la tabla: la escalera en orden y Routes al final. En el seeder
+ * Routes viene entre Growth y Enterprise, pero ahi parece un escalon mas y no
+ * lo es — trae menos que Business y cuesta mas.
+ */
+const columnas = [...escalera, routes];
+---
+
+<Base title="Precios">
+  <AnnouncementBar />
+  <Header client:load />
+
+  <main id="precios-page" data-moneda="clp">
+    {/* Hero */}
+    <section class="bg-canvas">
+      <div class="mx-auto flex w-full max-w-[1200px] flex-col items-center px-5 pt-16 pb-14 md:px-10 lg:pt-20">
+        <h1 class="max-w-[620px] text-center font-serif text-[34px] leading-[1.05] font-light tracking-[-0.05em] text-ink sm:text-[42px] lg:text-[52px]">
+          Precios simples.<br /><span class="text-muted/60">Sin sorpresas.</span>
+        </h1>
+
+        <div
+          class="mt-8 inline-flex items-center gap-1 rounded-full bg-ink/[0.05] p-1"
+          role="group"
+          aria-label="Moneda"
+        >
+          <button
+            type="button"
+            data-moneda-opcion="clp"
+            aria-pressed="true"
+            class="opcion-clp rounded-full px-3.5 py-1.5 text-[12px] font-medium text-muted transition-colors duration-200"
+          >
+            CLP
+          </button>
+          <button
+            type="button"
+            data-moneda-opcion="usd"
+            aria-pressed="false"
+            class="opcion-usd rounded-full px-3.5 py-1.5 text-[12px] font-medium text-muted transition-colors duration-200"
+          >
+            USD
+          </button>
+        </div>
+
+        {/* Tarjetas */}
+        <div class="mt-10 grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {escalera.map((p) => {
+            const destacado = p.slug === DESTACADO;
+            return (
+              <div class="relative flex flex-col overflow-hidden rounded-3xl bg-[#f4f2ec] p-7">
+                {destacado && (
+                  <img
+                    src="/images/pricing/flores.webp"
+                    width="420"
+                    height="594"
+                    loading="lazy"
+                    decoding="async"
+                    alt=""
+                    aria-hidden="true"
+                    class="flores pointer-events-none absolute inset-y-0 right-0 h-full w-auto"
+                  />
+                )}
+
+                <div class="relative flex items-start justify-between gap-2">
+                  <h2 class="text-[17px] leading-none font-medium text-ink">{p.nombre}</h2>
+                  {destacado && (
+                    <span class="rounded-md bg-ink px-2 py-1 text-[10px] leading-none font-medium text-canvas">
+                      Popular
+                    </span>
+                  )}
+                </div>
+
+                <div class="relative mt-5 flex items-baseline gap-1.5">
+                  <span class="text-[32px] leading-none font-medium tracking-[-0.04em] text-ink">
+                    <span class="moneda-clp">{enClp(p.precio)}</span><span class="moneda-usd">{enUsd(p.precio)}</span>
+                  </span>
+                  {p.precio > 0 && <span class="text-[13px] text-muted">/mes</span>}
+                </div>
+
+                <p class="relative mt-4 min-h-[36px] text-[13px] leading-[1.45] text-muted">{p.bajada}</p>
+
+                <p class="relative mt-5 text-[13px] leading-none font-medium text-ink">Incluye:</p>
+                <ul class="relative mt-3 flex flex-col gap-2">
+                  {[
+                    `${p.limites.usuarios} ${p.limites.usuarios === '1' ? 'usuario' : 'usuarios'}`,
+                    `${p.limites.productos} productos`,
+                    `${p.limites.sucursales} ${p.limites.sucursales === '1' ? 'sucursal' : 'sucursales'}`,
+                    `Soporte ${p.soporte.toLowerCase()}`,
+                  ].map((linea) => (
+                    <li class="flex items-start gap-2">
+                      <svg viewBox="0 0 20 20" class="mt-[3px] h-3.5 w-3.5 shrink-0 text-accent-deep" fill="none" aria-hidden="true">
+                        <path
+                          d="m4.5 10.5 3.5 3.5 7.5-8"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                      <span class="text-[13px] leading-[1.45] text-ink">{linea}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* El aire va en el wrapper: si pt-7 y pt-0 conviven en la misma
+                    clase, Tailwind resuelve por orden de la hoja y no del string. */}
+                <div class="relative mt-auto pt-7">
+                  <a
+                    href="#empezar"
+                    class={`flex h-10 w-full items-center justify-center rounded-xl text-[13px] font-medium transition-colors duration-200 ${
+                      destacado
+                        ? 'boton-relieve bg-accent-deep text-canvas hover:bg-accent-deep/90'
+                        : 'border border-border bg-surface text-ink hover:bg-ink/[0.04]'
+                    }`}
+                  >
+                    {p.precio === 0 ? 'Empezar gratis' : 'Empezar'}
+                  </a>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Routes, aparte de la escalera */}
+        <div class="mt-4 flex w-full flex-col items-start gap-4 rounded-3xl bg-[#f4f2ec] p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 class="text-[16px] leading-none font-medium text-ink">{routes.nombre}</h2>
+            <p class="mt-1.5 text-[13px] leading-[1.4] text-muted">
+              {routes.bajada} · {routes.limites.usuarios} usuarios · {routes.limites.sucursales} sucursales
+            </p>
+          </div>
+          <div class="flex shrink-0 items-center gap-5">
+            <div class="flex items-baseline gap-1.5">
+              <span class="text-[20px] leading-none font-medium tracking-[-0.04em] text-ink">
+                <span class="moneda-clp">{enClp(routes.precio)}</span><span class="moneda-usd">{enUsd(routes.precio)}</span>
+              </span>
+              <span class="text-[12px] text-muted">/mes</span>
+            </div>
+            <a
+              href="#empezar"
+              class="flex h-10 items-center justify-center rounded-xl border border-border bg-surface px-5 text-[13px] font-medium text-ink transition-colors duration-200 hover:bg-ink/[0.04]"
+            >
+              Empezar
+            </a>
+          </div>
+        </div>
+
+        <p class="mt-6 text-center text-[12px] leading-[1.4] text-muted">
+          <span class="moneda-usd">Precios en USD referenciales; el cobro se hace en CLP. </span>
+          Todos los planes se facturan por mes, sin permanencia.
+        </p>
+      </div>
+    </section>
+
+    {/* Tabla comparativa */}
+    <section class="bg-canvas">
+      <div class="mx-auto w-full max-w-[1200px] px-5 pb-16 md:px-10 lg:pb-20">
+        <h2 class="mb-10 text-center font-serif text-[28px] leading-[1.05] font-light tracking-[-0.05em] text-ink sm:text-[34px] lg:text-[40px]">
+          Encontrá el plan que te sirve.
+        </h2>
+
+        {/* En pantallas chicas la tabla se desplaza en vez de apretarse */}
+        {/*
+          overflow-x-auto convierte al div en contenedor de scroll y el sticky
+          del thead pasaria a referirse a el en vez de al viewport. Arriba de lg
+          la tabla entra entera, asi que ahi lo sacamos y el sticky funciona.
+        */}
+        <div class="overflow-x-auto rounded-3xl border border-border bg-surface lg:overflow-x-visible">
+          <table class="w-full min-w-[720px] border-collapse text-left">
+            <caption class="sr-only">
+              Comparación de módulos incluidos en cada plan de OpenSale
+            </caption>
+            <thead>
+              <tr class="border-b border-border">
+                <th scope="col" class="cabecera px-6 py-5 text-left text-[13px] font-medium text-ink">Módulo</th>
+                {columnas.map((p) => (
+                  <th
+                    scope="col"
+                    class={`cabecera px-4 py-5 text-center text-[13px] font-medium text-ink ${
+                      p.slug === DESTACADO ? 'cabecera-destacada' : ''
+                    }`}
+                  >
+                    {p.nombre}
+                    <span class="mt-1 block text-[11px] font-normal text-muted">
+                      <span class="moneda-clp">{enClp(p.precio)}</span><span class="moneda-usd">{enUsd(p.precio)}</span>
+                    </span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+
+            <tbody>
+              {/* Limites: van arriba porque son lo primero que se compara */}
+              <tr class="border-b border-border">
+                <th scope="colgroup" colspan={columnas.length + 1} class="px-6 pt-7 pb-3 text-[13px] font-medium text-ink">
+                  Límites
+                </th>
+              </tr>
+              {(['usuarios', 'productos', 'sucursales'] as const).map((clave) => (
+                <tr class="border-b border-border">
+                  <th scope="row" class="px-6 py-3 text-[13px] font-normal text-muted capitalize">{clave}</th>
+                  {columnas.map((p) => (
+                    <td
+                      class={`px-4 py-3 text-center text-[13px] text-ink ${
+                        p.slug === DESTACADO ? 'bg-accent/[0.06]' : ''
+                      }`}
+                    >
+                      {p.limites[clave]}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+              <tr class="border-b border-border">
+                <th scope="row" class="px-6 py-3 text-[13px] font-normal text-muted">Soporte</th>
+                {columnas.map((p) => (
+                  <td
+                    class={`px-4 py-3 text-center text-[13px] text-ink ${
+                      p.slug === DESTACADO ? 'bg-accent/[0.06]' : ''
+                    }`}
+                  >
+                    {p.soporte}
+                  </td>
+                ))}
+              </tr>
+
+              {/* Los modulos, agrupados como los agrupa el seeder */}
+              {grupos.map((g) => (
+                <>
+                  <tr class="border-b border-border">
+                    <th scope="colgroup" colspan={columnas.length + 1} class="px-6 pt-7 pb-3 text-[13px] font-medium text-ink">
+                      {g.titulo}
+                    </th>
+                  </tr>
+                  {g.filas.map((fila) => (
+                    <tr class="border-b border-border last:border-0">
+                      <th scope="row" class="px-6 py-3 text-[13px] font-normal text-muted">{fila.etiqueta}</th>
+                      {columnas.map((p) => (
+                        <td
+                          class={`px-4 py-3 text-center ${p.slug === DESTACADO ? 'bg-accent/[0.06]' : ''}`}
+                        >
+                          {p.modulos[fila.clave] ? (
+                            <>
+                              <svg viewBox="0 0 20 20" class="mx-auto h-4 w-4 text-accent-deep" fill="none" aria-hidden="true">
+                                <path
+                                  d="m4.5 10.5 3.5 3.5 7.5-8"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                  stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                />
+                              </svg>
+                              <span class="sr-only">Incluido</span>
+                            </>
+                          ) : (
+                            <>
+                              <span class="text-[13px] text-muted/50" aria-hidden="true">—</span>
+                              <span class="sr-only">No incluido</span>
+                            </>
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <Cierre />
+  </main>
+</Base>
+
+<style>
+  /* Mismo switch de moneda que la home: sin JS queda en CLP. */
+  [data-moneda='clp'] .moneda-usd,
+  [data-moneda='usd'] .moneda-clp {
+    display: none;
+  }
+
+  [data-moneda='clp'] .opcion-clp,
+  [data-moneda='usd'] .opcion-usd {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    box-shadow: 0 1px 2px rgb(28 26 21 / 0.08);
+  }
+
+  /*
+   * Cabecera pegajosa: al bajar por las 29 filas hay que seguir sabiendo de que
+   * columna es cada check. Se pega justo debajo del header del sitio.
+   *
+   * El borde inferior va como box-shadow y no como border: con
+   * border-collapse: collapse los bordes de una celda sticky no se pintan.
+   */
+  .cabecera {
+    position: sticky;
+    top: var(--spacing-header);
+    z-index: 10;
+    background-color: var(--color-surface);
+    box-shadow: inset 0 -1px 0 var(--color-border);
+  }
+
+  .cabecera-destacada {
+    background-color: color-mix(in srgb, var(--color-accent) 6%, var(--color-surface));
+  }
+
+  /*
+   * La acuarela del plan destacado. El referente tiene 3 planes y nosotros 4,
+   * asi que la tarjeta es mas angosta y la mascara tiene que disolverla antes
+   * de llegar a la lista.
+   */
+  .flores {
+    opacity: 0.8;
+    -webkit-mask-image: linear-gradient(to left, #000 0%, transparent 55%);
+    mask-image: linear-gradient(to left, #000 0%, transparent 55%);
+  }
+</style>
+
+<script>
+  const pagina = document.getElementById('precios-page');
+
+  pagina?.querySelectorAll<HTMLButtonElement>('[data-moneda-opcion]').forEach((boton) => {
+    boton.addEventListener('click', () => {
+      const elegida = boton.dataset.monedaOpcion;
+      if (!elegida) return;
+
+      pagina.dataset.moneda = elegida;
+      pagina.querySelectorAll<HTMLButtonElement>('[data-moneda-opcion]').forEach((otro) => {
+        otro.setAttribute('aria-pressed', String(otro.dataset.monedaOpcion === elegida));
+      });
+    });
+  });
+</script>
