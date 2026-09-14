@@ -1,0 +1,115 @@
+---
+/**
+ * Footer del sitio. Va en el Base, asi que aparece en la home y en /precios sin
+ * tener que acordarse de sumarlo en cada pagina.
+ *
+ * Los links repiten los del nav a proposito: es la navegacion de rescate para
+ * quien llego hasta abajo, y de paso le da al buscador los mismos destinos.
+ */
+import { site, nav } from '../config/site';
+
+const anio = new Date().getFullYear();
+
+type Link = { label: string; href: string; externo?: boolean };
+
+const columnas: { titulo: string; links: Link[] }[] = [
+  {
+    titulo: 'Producto',
+    links: [
+      { label: 'Cómo funciona', href: '/#como-funciona' },
+      { label: 'Automatizaciones', href: '/#automatizaciones' },
+      { label: 'Reportes', href: '/#reportes' },
+      { label: 'Precios', href: '/precios' },
+    ],
+  },
+  {
+    titulo: 'Recursos',
+    links: [
+      { label: 'Documentación', href: site.docsUrl, externo: true },
+      { label: 'Integraciones', href: '/#integraciones' },
+      { label: 'Contacto', href: `mailto:${site.email}` },
+    ],
+  },
+  {
+    titulo: 'Legal',
+    links: [
+      { label: 'Términos y condiciones', href: '/terminos' },
+      { label: 'Privacidad', href: `${site.appUrl}/privacidad`, externo: true },
+    ],
+  },
+  {
+    titulo: 'Cuenta',
+    links: [
+      { label: 'Iniciar sesión', href: '/ingresar' },
+      { label: 'Crear cuenta', href: '/registro' },
+    ],
+  },
+];
+---
+
+<footer class="border-t border-border bg-canvas">
+  <div class="mx-auto w-full max-w-[1200px] px-5 py-14 md:px-10 lg:py-16">
+    <div class="flex flex-col gap-12 lg:flex-row lg:justify-between lg:gap-16">
+      {/* Marca */}
+      <div class="max-w-[280px]">
+        <a href="/" class="flex items-center gap-1.5">
+          <svg
+            viewBox="0 0 100 100"
+            class="h-6 w-6 shrink-0 text-ink"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="13"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <path d="M 84 61 L 67 90.44 L 33 90.44 L 16 61" />
+            <path d="M 16 39 L 33 9.56 L 67 9.56 L 84 39" />
+          </svg>
+          <span class="text-[19px] leading-none font-medium tracking-[-0.02em] text-ink">
+            {site.siteName}
+          </span>
+        </a>
+        <p class="mt-4 text-[13px] leading-[1.5] text-muted">
+          Pedidos, inventario y facturación en un solo lugar. Hecho para negocios que venden
+          todos los días.
+        </p>
+      </div>
+
+      {/* Navegacion */}
+      <nav class="grid grid-cols-2 gap-10 sm:grid-cols-4 lg:gap-12" aria-label="Pie de página">
+        {columnas.map((c) => (
+          <div>
+            <h2 class="text-[13px] leading-none font-medium text-ink">{c.titulo}</h2>
+            <ul class="mt-4 flex flex-col gap-2.5">
+              {c.links.map((l) => (
+                <li>
+                  <a
+                    href={l.href}
+                    target={l.externo ? '_blank' : undefined}
+                    rel={l.externo ? 'noopener' : undefined}
+                    class="text-[13px] leading-[1.4] text-muted transition-colors duration-200 hover:text-ink"
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </nav>
+    </div>
+
+    <div class="mt-12 flex flex-col gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-[12px] leading-[1.4] text-muted">
+        © {anio} {site.siteName}. Todos los derechos reservados.
+      </p>
+      <a
+        href={`mailto:${site.email}`}
+        class="text-[12px] leading-[1.4] text-muted transition-colors duration-200 hover:text-ink"
+      >
+        {site.email}
+      </a>
+    </div>
+  </div>
+</footer>

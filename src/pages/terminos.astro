@@ -1,0 +1,184 @@
+---
+/**
+ * Terminos y condiciones.
+ *
+ * Los plazos, el cobro y los limites salen del codigo del ERP, no estan
+ * inventados. Las clausulas juridicas siguen criterio estandar de SaaS bajo ley
+ * chilena; conviene que un abogado las valide antes de publicar.
+ *
+ * Dos decisiones que no son cosmeticas:
+ *   - No se promete disponibilidad. El seeder dice "soporte 24/7", que es
+ *     atencion y no uptime. Prometer un SLA que no se puede sostener es peor
+ *     que no tener ninguno.
+ *   - La limitacion de responsabilidad excluye el dolo y la culpa grave. El
+ *     art. 1465 del Codigo Civil no admite condonar el dolo futuro: sin esa
+ *     salvedad la clausula entera se cae.
+ *
+ * Fuentes de los datos:
+ *   Subscription::GRACE_PERIOD_DAYS          -> 7 dias de gracia
+ *   CheckSubscriptionStatus                   -> que pasa durante y despues
+ *   plans.billing_interval                    -> cobro mensual
+ *   PlanSeeder                                -> limites por plan
+ */
+import Base from '../layouts/Base.astro';
+import AnnouncementBar from '../components/AnnouncementBar.astro';
+import Header from '../components/react/Header';
+import { site } from '../config/site';
+import { planes } from '../data/planes';
+
+const actualizado = new Date().toLocaleDateString('es-CL', {
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric',
+});
+
+const secciones = [
+  {
+    titulo: 'Qué es este documento',
+    parrafos: [
+      `Estos términos regulan el uso de ${site.siteName}, el sistema de gestión de ventas, inventario y facturación que opera en ${site.appUrl.replace('https://', '')}. Al crear una cuenta aceptás lo que sigue.`,
+      'Si contratás en nombre de una empresa, declarás que tenés facultades para obligarla.',
+    ],
+  },
+  {
+    titulo: 'La cuenta',
+    parrafos: [
+      'Sos responsable de la veracidad de los datos que cargás y de la actividad que ocurra bajo tu cuenta, incluidas las de los usuarios que invites.',
+      'Cada plan tiene un tope de usuarios, productos y sucursales. Al alcanzarlo, el sistema no permite seguir agregando hasta que subas de plan.',
+    ],
+  },
+  {
+    titulo: 'Planes y cobro',
+    parrafos: [
+      'Todos los planes se facturan por mes y en pesos chilenos. Los precios publicados no incluyen impuestos salvo que se indique.',
+      'El cobro es automático: si registraste una tarjeta con Webpay OneClick, se cobra el mismo día de cada mes. También podés pagar por Mercado Pago.',
+      'El plan Starter es gratuito y no vence.',
+    ],
+  },
+  {
+    titulo: 'Si un pago falla',
+    parrafos: [
+      'Cuando vence la suscripción tenés 7 días de gracia. Durante ese plazo seguís usando el sistema con normalidad y ves un aviso dentro de la aplicación.',
+      'Pasados los 7 días perdés el acceso a los módulos y quedás redirigido a la pantalla de suscripción hasta regularizar. Tus datos no se borran por esto.',
+    ],
+  },
+  {
+    titulo: 'Cancelación',
+    parrafos: [
+      'Podés cancelar cuando quieras, sin permanencia ni multa. La cancelación corta la renovación: seguís con acceso hasta el final del período que ya pagaste.',
+      'No hay devoluciones por períodos empezados, salvo que la ley lo exija.',
+    ],
+  },
+  {
+    titulo: 'Documentos tributarios',
+    parrafos: [
+      'El sistema emite boletas y facturas electrónicas y las envía al Servicio de Impuestos Internos en tu nombre, con los datos y el certificado digital que vos cargues.',
+      'La responsabilidad tributaria de lo que emitís es tuya: nosotros proveemos la herramienta, no asesoría contable. Verificá que los documentos queden aceptados.',
+      'Si el SII rechaza un documento, te lo mostramos con el motivo informado y reintentamos el envío cuando corresponda. No respondemos por rechazos originados en datos mal cargados, un certificado digital vencido, folios agotados o cambios normativos del propio Servicio.',
+      'Sí respondemos si el rechazo se debe a una falla atribuible al sistema, y en ese caso lo corregimos y reenviamos sin costo.',
+    ],
+  },
+  {
+    titulo: 'Tus datos',
+    parrafos: [
+      'Los datos que cargás son tuyos. Los tratamos según la Política de Privacidad.',
+      'Podés exportar tu información en cualquier momento desde el sistema.',
+      'Si cancelás, conservamos tus datos 90 días para que puedas reactivar o exportar. Cumplido ese plazo los eliminamos de forma definitiva, salvo lo que debamos guardar por obligación legal o tributaria.',
+      'Podés pedir la eliminación anticipada escribiéndonos, y la ejecutamos dentro de 30 días.',
+    ],
+  },
+  {
+    titulo: 'Disponibilidad y soporte',
+    parrafos: [
+      'Hacemos lo razonable para que el servicio esté disponible, pero puede haber interrupciones por mantenimiento o por fallas de terceros de los que dependemos, como los medios de pago o el SII.',
+      'No comprometemos un porcentaje de disponibilidad. Los planes incluyen niveles de soporte —comunidad, correo, prioritario y 24/7 en Enterprise— que son tiempos de atención, no de servicio ininterrumpido.',
+      'Las mantenciones programadas se avisan con al menos 48 horas y se hacen en horario de baja actividad. Si necesitás un compromiso de disponibilidad con compensación, se acuerda por separado y por escrito.',
+    ],
+  },
+  {
+    titulo: 'Responsabilidad',
+    parrafos: [
+        'El servicio se entrega tal como está. No garantizamos que resulte apto para un fin particular tuyo ni que opere libre de errores.',
+      'Nuestra responsabilidad total frente a vos, por cualquier causa y durante toda la relación, no excederá lo que hayas pagado por el servicio en los 12 meses anteriores al hecho que la origine. Si estás en el plan gratuito, ese monto es cero.',
+      'No respondemos por lucro cesante, pérdida de negocios, de datos ni por daños indirectos o consecuenciales.',
+      'Estos límites no se aplican al dolo ni a la culpa grave, ni a los derechos que la ley te reconozca de forma irrenunciable.',
+    ],
+  },
+  {
+    titulo: 'Cambios',
+    parrafos: [
+      'Podemos modificar estos términos. Si el cambio es relevante te avisamos con antelación al correo de la cuenta. Seguir usando el servicio implica aceptarlos.',
+    ],
+  },
+  {
+    titulo: 'Ley aplicable',
+    parrafos: [
+      'Estos términos se rigen por la ley chilena. El tratamiento de datos personales se sujeta a la Ley 19.628 y a la Ley 21.719 conforme entre en vigencia.',
+      'Cualquier controversia se somete a los tribunales ordinarios de justicia de la ciudad de Santiago. Si contratás como consumidor, conservás los derechos que te da la Ley 19.496.',
+    ],
+  },
+  {
+    titulo: 'Contacto',
+    parrafos: [`Cualquier duda sobre estos términos: ${site.email}.`],
+  },
+];
+
+const limites = planes.map((p) => ({
+  nombre: p.nombre,
+  precio: p.precio === 0 ? 'Gratis' : `$${String(p.precio).replace(/\B(?=(\d{3})+(?!\d))/g, '.')} / mes`,
+  tope: `${p.limites.usuarios} usuarios · ${p.limites.productos} productos · ${p.limites.sucursales} sucursales`,
+}));
+---
+
+<Base title="Términos y condiciones">
+  <AnnouncementBar />
+  <Header client:load />
+
+  <main class="bg-canvas">
+    <div class="mx-auto w-full max-w-[760px] px-5 py-16 md:px-10 lg:py-20">
+      <h1 class="font-serif text-[30px] leading-[1.05] font-light tracking-[-0.05em] text-ink lg:text-[38px]">
+        Términos y condiciones
+      </h1>
+      <p class="mt-3 text-[13px] text-muted">Última actualización: {actualizado}</p>
+
+      <div class="mt-10 flex flex-col gap-9">
+        {secciones.map((s, i) => (
+          <section>
+            <h2 class="text-[15px] leading-none font-medium text-ink">
+              {i + 1}. {s.titulo}
+            </h2>
+            <div class="mt-3 flex flex-col gap-3">
+              {s.parrafos.map((p) => (
+                <p class="text-[14px] leading-[1.65] text-muted">{p}</p>
+              ))}
+            </div>
+
+            {s.titulo === 'Planes y cobro' && (
+              <div class="mt-5 overflow-hidden rounded-2xl border border-border bg-surface">
+                <table class="w-full border-collapse text-left">
+                  <caption class="sr-only">Planes vigentes y sus topes</caption>
+                  <thead>
+                    <tr class="border-b border-border">
+                      <th scope="col" class="px-4 py-3 text-[12px] font-medium text-ink">Plan</th>
+                      <th scope="col" class="px-4 py-3 text-[12px] font-medium text-ink">Precio</th>
+                      <th scope="col" class="px-4 py-3 text-[12px] font-medium text-ink">Topes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {limites.map((l) => (
+                      <tr class="border-b border-border last:border-0">
+                        <th scope="row" class="px-4 py-3 text-[12px] font-medium text-ink">{l.nombre}</th>
+                        <td class="px-4 py-3 text-[12px] whitespace-nowrap text-muted">{l.precio}</td>
+                        <td class="px-4 py-3 text-[12px] text-muted">{l.tope}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+        ))}
+      </div>
+    </div>
+  </main>
+</Base>

@@ -1,0 +1,113 @@
+---
+/**
+ * Bloque de cierre: es el destino de #empezar, el ancla a la que apuntan todos
+ * los CTA de la pagina (header, hero, las seis pestañas de producto y los cinco
+ * botones de precios).
+ *
+ * Va en tarjeta blanca sobre el canvas, como el resto de la pagina. El halftone
+ * queda detras en accent, enmascarado a los bordes igual que en el hero, asi el
+ * cierre rima con la apertura sin pelearse con el texto.
+ */
+import { site } from '../config/site';
+
+const garantias = [
+  { titulo: 'Gratis de verdad', cuerpo: 'El plan Starter no vence ni pide tarjeta.' },
+  { titulo: 'Migramos tus datos', cuerpo: 'Traés tu planilla y la cargamos nosotros.' },
+  { titulo: 'Sin permanencia', cuerpo: 'Cambiás de plan o te vas cuando quieras.' },
+];
+---
+
+<section id="empezar" class="bg-canvas">
+  <div class="mx-auto w-full max-w-[1200px] px-5 pt-4 pb-20 md:px-10 lg:pb-24">
+    <div class="overflow-hidden rounded-3xl border border-border bg-surface">
+      <div class="relative flex flex-col items-center overflow-hidden px-6 py-12 md:px-10 lg:py-14">
+        {/* Halftone de cierre: misma textura que abre la pagina. Va solo detras
+            de este bloque para no pasar por debajo de las garantias. */}
+        <canvas id="cierre-halftone" class="cierre-halftone" aria-hidden="true"></canvas>
+
+        <h2 class="relative max-w-[520px] text-center font-serif text-[26px] leading-[1.05] font-light tracking-[-0.05em] text-ink sm:text-[30px] lg:text-[34px]">
+          Empezá hoy. Gratis.
+        </h2>
+        <p class="relative mt-3 max-w-[420px] text-center text-[14px] leading-[1.5] text-muted">
+          Creá tu cuenta y cargá tu primera venta en lo que te lleva leer esto. Sin instalación
+          ni visita técnica.
+        </p>
+
+        <div class="relative mt-7 flex w-full flex-col items-stretch gap-2.5 sm:w-auto sm:flex-row sm:items-center">
+          <a
+            href="/registro"
+            class="boton-relieve flex h-11 items-center justify-center rounded-lg bg-accent-deep px-6 text-[13px] font-medium text-canvas transition-colors duration-200 hover:bg-accent-deep/90 sm:min-w-[170px]"
+          >
+            Crear mi cuenta
+          </a>
+          <a
+            href={`mailto:${site.email}?subject=Quiero%20una%20demo%20de%20OpenSale`}
+            class="flex h-11 items-center justify-center rounded-xl border border-border px-6 text-[13px] font-medium text-ink transition-colors duration-200 hover:bg-ink/[0.04] sm:min-w-[170px]"
+          >
+            Pedir una demo
+          </a>
+        </div>
+      </div>
+
+      {/*
+        Las garantias van en su propia franja, con borde arriba: separadas del
+        bloque de conversion y centradas como todo lo de arriba, que era lo que
+        antes no cerraba.
+      */}
+      <div class="mx-6 grid grid-cols-1 divide-y divide-border border-t border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0 md:mx-10">
+        {garantias.map((g) => (
+          <div class="flex flex-col items-center gap-1 px-5 py-5 text-center">
+            <span class="flex items-center gap-1.5 text-[13px] leading-none font-medium text-ink">
+              <svg viewBox="0 0 20 20" class="h-3.5 w-3.5 shrink-0 text-accent-deep" fill="none" aria-hidden="true">
+                <path
+                  d="m4.5 10.5 3.5 3.5 7.5-8"
+                  stroke="currentColor"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              {g.titulo}
+            </span>
+            <p class="max-w-[220px] text-[12px] leading-[1.5] text-muted">{g.cuerpo}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /*
+   * Mismo tratamiento que el hero: la mascara radial abre un hueco sobre el
+   * centro, donde caen el titulo y los botones, y deja los puntos solo en los
+   * bordes del bloque.
+   */
+  .cierre-halftone {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.3;
+    -webkit-mask-image: radial-gradient(ellipse 52% 60% at 50% 42%, transparent 42%, #000 96%);
+    mask-image: radial-gradient(ellipse 52% 60% at 50% 42%, transparent 42%, #000 96%);
+  }
+</style>
+
+<script>
+  import { halftone } from '../scripts/halftone';
+
+  const canvas = document.getElementById('cierre-halftone');
+  if (canvas instanceof HTMLCanvasElement) {
+    halftone(canvas, {
+      color: getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim(),
+      spacing: 20,
+      dot: 3.1,
+      scale: 0.9,
+      speed: 0.9,
+      umbralBajo: -0.55,
+      umbralAlto: 0.85,
+    });
+  }
+</script>

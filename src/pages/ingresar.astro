@@ -1,0 +1,53 @@
+---
+/**
+ * Paso 1 del ingreso: se pide el correo y se entrega al ERP.
+ *
+ * No hay campo de contraseña a proposito. La landing es estatica y no puede
+ * validar nada; un formulario que pide la clave sin poder verificarla le enseña
+ * al usuario a tipearla en cualquier pagina que se vea parecida. El correo viaja
+ * por GET al login real, que la pide alli.
+ */
+import Auth from '../layouts/Auth.astro';
+import GoogleAuth from '../components/GoogleAuth.astro';
+import { site } from '../config/site';
+---
+
+<Auth
+  title="Iniciar sesión"
+  encabezado={`Entrá a ${site.siteName}`}
+  bajada="Te estábamos esperando. Seguimos donde lo dejaste."
+>
+  <GoogleAuth etiqueta="Continuar con Google" />
+
+  <form action={`${site.appUrl}/login`} method="get" class="flex flex-col gap-3">
+    <label for="correo" class="sr-only">Correo de trabajo</label>
+    <input
+      type="email"
+      id="correo"
+      name="email"
+      required
+      autocomplete="email"
+      placeholder="Tu correo de trabajo"
+      class="h-11 w-full rounded-lg border border-border bg-surface px-4 text-[13px] text-ink transition-colors duration-200 outline-none placeholder:text-muted/70 focus-visible:border-accent-deep focus-visible:ring-2 focus-visible:ring-accent/30"
+    />
+    <button
+      type="submit"
+      class="boton-relieve flex h-11 w-full cursor-pointer items-center justify-center rounded-lg bg-accent-deep text-[13px] font-medium text-canvas transition-colors duration-200 hover:bg-accent-deep/90"
+    >
+      Continuar
+    </button>
+  </form>
+
+  <p class="mt-4 text-center text-[13px] text-muted">
+    <a href="/recuperar" class="underline underline-offset-2 transition-colors duration-200 hover:text-ink">
+      Olvidé mi contraseña
+    </a>
+  </p>
+
+  <p class="mt-6 border-t border-border pt-6 text-center text-[13px] text-muted">
+    ¿Todavía no tenés cuenta?{' '}
+    <a href="/registro" class="font-medium text-ink underline underline-offset-2 transition-opacity duration-200 hover:opacity-70">
+      Creá una gratis
+    </a>
+  </p>
+</Auth>

@@ -1,18 +1,26 @@
 import { useEffect, useRef, useState } from 'react';
 import { nav, site } from '../../config/site';
 
-/** Marca de OpenSale: tres barras ascendentes dentro del cuadrado oscuro. */
+/**
+ * Marca de OpenSale: el hexagono del ERP partido en dos mitades — la tapa
+ * levantada. El corte es el concepto, asi que gap y grosor estan calibrados
+ * para que no se cierre por debajo de 20 px.
+ */
 function LogoMark() {
   return (
-    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[3px] bg-ink">
-      <svg viewBox="0 0 16 14" className="h-3.5 w-4" fill="currentColor" aria-hidden="true">
-        <g className="text-canvas">
-          <rect x="0" y="8" width="4" height="6" rx="1.2" fill="#fbfaf6" />
-          <rect x="6" y="4" width="4" height="10" rx="1.2" fill="#fbfaf6" />
-          <rect x="12" y="0" width="4" height="14" rx="1.2" fill="#fbfaf6" />
-        </g>
-      </svg>
-    </span>
+    <svg
+      viewBox="0 0 100 100"
+      className="h-6 w-6 shrink-0 text-ink"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="13"
+      strokeLinejoin="round"
+      strokeLinecap="round"
+      aria-hidden="true"
+    >
+      <path d="M 84 61 L 67 90.44 L 33 90.44 L 16 61" />
+      <path d="M 16 39 L 33 9.56 L 67 9.56 L 84 39" />
+    </svg>
   );
 }
 
@@ -37,20 +45,20 @@ function Chevron({ open }: { open: boolean }) {
 }
 
 const linkClass =
-  'flex h-11 items-center gap-1.5 rounded-lg px-4 text-[15px] leading-[1.3] font-normal text-muted transition-colors duration-200 hover:bg-ink/[0.04] hover:text-ink';
+  'flex h-11 items-center gap-1.5 rounded-lg px-3.5 text-[13.5px] leading-[1.3] font-normal text-muted transition-colors duration-200 hover:bg-ink/[0.04] hover:text-ink';
 
 /** Boton primario con el texto que rueda hacia arriba al pasar el mouse. */
 function RollingCta({ href, label }: { href: string; label: string }) {
   return (
     <a
       href={href}
-      className="group flex h-11 items-center justify-center rounded-[10px] bg-ink px-4 pt-px transition-colors duration-200 hover:bg-ink/90"
+      className="boton-relieve group flex h-11 items-center justify-center rounded-lg bg-accent-deep px-4 pt-px transition-colors duration-200 hover:bg-accent-deep/90"
     >
-      <span className="pointer-events-none flex h-[21px] select-none flex-col items-center overflow-hidden">
+      <span className="pointer-events-none flex h-[19px] select-none flex-col items-center overflow-hidden">
         {[0, 1].map((i) => (
           <span
             key={i}
-            className="block h-[21px] text-[14px] leading-[1.5] font-medium whitespace-pre text-canvas transition-transform duration-300 ease-out group-hover:-translate-y-[21px]"
+            className="block h-[19px] text-[13px] leading-[1.45] font-medium whitespace-pre text-canvas transition-transform duration-300 ease-out group-hover:-translate-y-[19px]"
           >
             {label}
           </span>
@@ -92,7 +100,7 @@ export default function Header() {
         <div className="flex min-w-0 shrink-0 items-center gap-2.5 md:min-w-[150px]">
           <a href="#inicio" className="flex items-center gap-1.5 overflow-hidden">
             <LogoMark />
-            <span className="text-[20px] leading-[1.3] font-medium tracking-[-0.02em] whitespace-pre text-ink">
+            <span className="text-[18px] leading-[1.3] font-medium tracking-[-0.02em] whitespace-pre text-ink">
               {site.siteName}
             </span>
           </a>
@@ -122,8 +130,8 @@ export default function Header() {
                       onClick={() => setOpenDropdown(false)}
                       className="block rounded-lg px-3 py-2.5 transition-colors duration-150 hover:bg-canvas"
                     >
-                      <span className="block text-[14px] leading-[1.4] font-medium text-ink">{item.label}</span>
-                      <span className="mt-0.5 block text-[13px] leading-[1.4] text-muted">{item.desc}</span>
+                      <span className="block text-[13px] leading-[1.4] font-medium text-ink">{item.label}</span>
+                      <span className="mt-0.5 block text-[12px] leading-[1.4] text-muted">{item.desc}</span>
                     </a>
                   ))}
                 </div>

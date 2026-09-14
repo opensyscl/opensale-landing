@@ -1,0 +1,131 @@
+---
+/**
+ * Layout de las pantallas de cuenta: formulario a la izquierda, acuarela con la
+ * captura del panel a la derecha. Lo comparten ingresar, registro, recuperar y
+ * la de confirmacion.
+ *
+ * Sin header ni footer, como toda pantalla de ingreso: nada que distraiga del
+ * unico objetivo. La navegacion de salida es el logo y el link del pie.
+ */
+import Base from './Base.astro';
+import { site } from '../config/site';
+
+interface Props {
+  title: string;
+  /** Titulo grande del formulario. */
+  encabezado: string;
+  bajada: string;
+  /** Texto legal del pie. Por defecto el de terminos. */
+  pie?: 'terminos' | 'ninguno';
+}
+
+const { title, encabezado, bajada, pie = 'terminos' } = Astro.props;
+---
+
+<Base title={title}>
+  <main class="flex min-h-screen flex-col bg-canvas p-3 lg:flex-row lg:p-4">
+    {/* Izquierda: el formulario */}
+    <div class="relative flex w-full flex-col overflow-hidden px-3 py-8 lg:w-1/2 lg:px-10 lg:py-6">
+      {/* Puntos: la misma textura del hero, apenas insinuada */}
+      <canvas id="auth-halftone" class="auth-halftone" aria-hidden="true"></canvas>
+
+      <a href="/" class="relative flex items-center gap-1.5 self-start">
+        <svg
+          viewBox="0 0 100 100"
+          class="h-6 w-6 shrink-0 text-ink"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="13"
+          stroke-linejoin="round"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M 84 61 L 67 90.44 L 33 90.44 L 16 61" />
+          <path d="M 16 39 L 33 9.56 L 67 9.56 L 84 39" />
+        </svg>
+        <span class="text-[18px] leading-none font-medium tracking-[-0.02em] text-ink">
+          {site.siteName}
+        </span>
+      </a>
+
+      <div class="relative flex flex-1 items-center justify-center py-14">
+        <div class="w-full max-w-[340px]">
+          <h1 class="text-center text-[22px] leading-[1.2] font-medium tracking-[-0.02em] text-ink">
+            {encabezado}
+          </h1>
+          <p class="mt-2 text-center text-[13px] leading-[1.5] text-muted">{bajada}</p>
+
+          <slot />
+        </div>
+      </div>
+
+      {pie === 'terminos' ? (
+        <p class="relative text-center text-[12px] leading-[1.5] text-muted">
+          Al continuar aceptás nuestros{' '}
+          <a href="/terminos" class="underline underline-offset-2 transition-colors duration-200 hover:text-ink">
+            términos y condiciones
+          </a>.
+        </p>
+      ) : (
+        <p class="relative text-center text-[12px] leading-[1.5] text-muted">
+          <a href="/" class="underline underline-offset-2 transition-colors duration-200 hover:text-ink">
+            Volver al inicio
+          </a>
+        </p>
+      )}
+    </div>
+
+    {/* Derecha: la acuarela con la captura encima */}
+    <div class="grano relative hidden overflow-hidden rounded-3xl lg:block lg:w-1/2">
+      <img
+        src="/images/hero/hero-flowers.png"
+        alt=""
+        aria-hidden="true"
+        class="absolute inset-0 h-full w-full object-cover"
+      />
+      <img
+        src="/images/producto/panel.webp"
+        width="1600"
+        height="792"
+        decoding="async"
+        alt="Panel de control de OpenSale"
+        class="absolute top-1/2 left-[4%] z-[2] w-[165%] max-w-none -translate-y-1/2 rounded-xl shadow-[0_2px_6px_rgba(0,0,0,0.06),0_18px_50px_rgba(0,0,0,0.18),0_0_0_1px_rgba(28,26,21,0.06)]"
+      />
+    </div>
+  </main>
+</Base>
+
+<style>
+  /*
+   * Los puntos son textura de fondo y nada mas: la mascara radial abre un hueco
+   * grande en el centro, que es donde cae el formulario, y la opacidad es la
+   * mitad de la del hero. Tienen que sentirse, no verse.
+   */
+  .auth-halftone {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.16;
+    -webkit-mask-image: radial-gradient(ellipse 58% 46% at 50% 50%, transparent 46%, #000 100%);
+    mask-image: radial-gradient(ellipse 58% 46% at 50% 50%, transparent 46%, #000 100%);
+  }
+</style>
+
+<script>
+  import { halftone } from '../scripts/halftone';
+
+  const canvas = document.getElementById('auth-halftone');
+  if (canvas instanceof HTMLCanvasElement) {
+    halftone(canvas, {
+      color: getComputedStyle(document.documentElement).getPropertyValue('--color-accent').trim(),
+      spacing: 22,
+      dot: 2.8,
+      scale: 0.8,
+      speed: 0.7,
+      umbralBajo: -0.55,
+      umbralAlto: 0.85,
+    });
+  }
+</script>

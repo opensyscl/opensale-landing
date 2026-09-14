@@ -12,6 +12,13 @@ export const site = {
   lang: 'es',
   themeColor: '#fbfaf6',
   email: 'hola@opensale.example',
+  /**
+   * Donde vive la app. PLACEHOLDER: apunta al dominio real antes de publicar,
+   * de aca salen el boton de registro del cierre y el "Iniciar sesion".
+   */
+  appUrl: 'https://app.opensale.example',
+  /** Documentacion publica del producto. */
+  docsUrl: 'https://docs.erp.opensys.cl',
 } as const;
 
 export type Site = typeof site;
@@ -22,16 +29,16 @@ export const nav = {
   dropdown: {
     label: 'Producto',
     items: [
-      { label: 'Como funciona', href: '#como-funciona', desc: 'El recorrido completo, de punta a punta.' },
-      { label: 'Automatizaciones', href: '#automatizaciones', desc: 'Reglas que trabajan solas.' },
-      { label: 'Reportes', href: '#reportes', desc: 'Numeros claros, sin planillas.' },
+      { label: 'Como funciona', href: '/#como-funciona', desc: 'El recorrido completo, de punta a punta.' },
+      { label: 'Automatizaciones', href: '/#automatizaciones', desc: 'Reglas que trabajan solas.' },
+      { label: 'Reportes', href: '/#reportes', desc: 'Numeros claros, sin planillas.' },
+      { label: 'Documentación', href: site.docsUrl, desc: 'Guias y referencia tecnica.' },
     ],
   },
   links: [
-    { label: 'Integraciones', href: '#integraciones' },
-    { label: 'Clientes', href: '#clientes' },
-    { label: 'Precios', href: '#precios' },
+    { label: 'Integraciones', href: '/#integraciones' },
+    { label: 'Precios', href: '/precios' },
   ],
-  signIn: { label: 'Iniciar sesion', href: '#login' },
-  cta: { label: 'Probar OpenSale gratis', href: '#empezar' },
+  signIn: { label: 'Iniciar sesión', href: '/ingresar' },
+  cta: { label: 'Probar OpenSale gratis', href: '/#empezar' },
 } as const;
