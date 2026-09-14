@@ -1,0 +1,707 @@
+---
+/**
+ * Seccion de casos de uso con pestañas (replica de la seccion de tabs del
+ * template Solva): encabezado, barra de 6 pestañas y un panel por pestaña con
+ * texto a la izquierda y un mockup del producto a la derecha.
+ *
+ * Las tres pestañas que el menu Producto ya linkeaba (#como-funciona,
+ * #automatizaciones, #reportes) llevan ese id en su boton, asi que el nav
+ * scrollea hasta aca Y abre la pestaña que corresponde.
+ *
+ * Sin JS se ve la primera pestaña: el data-activo de la seccion decide cual, y
+ * arranca escrito en el HTML.
+ */
+
+type Item = { titulo: string; cuerpo: string };
+
+type Tab = {
+  /** Sirve de key, de data-attr y de ancla del nav cuando hay id. */
+  slug: string;
+  /** El id que el nav ya linkeaba, si esta pestaña cubre uno. */
+  ancla?: string;
+  etiqueta: string;
+  icono: 'recibo' | 'documento' | 'caja' | 'carro' | 'rayo' | 'grafico';
+  titulo: string;
+  items: Item[];
+  /** Clave de la paleta: Tailwind necesita clases literales, ver `tono`. */
+  color: keyof typeof tono;
+  /**
+   * Captura real del ERP. Las pestañas sin captura caen al mockup en HTML de
+   * mas abajo, que es lo que hay hasta tener la pantalla fotografiada.
+   */
+  captura?: string;
+};
+
+/*
+ * Tailwind v4 genera utilidades a partir de strings literales que encuentra en
+ * el codigo, asi que `bg-${color}/12` no existiria. Por eso cada tono escribe
+ * sus clases completas y las pestañas solo eligen una clave.
+ */
+const tono = {
+  accent: {
+    fondo: 'from-accent/35 via-accent/15 to-accent/5',
+    chip: 'bg-accent/12 text-accent',
+    barra: 'bg-accent/30',
+    solido: 'bg-accent',
+  },
+  purple: {
+    fondo: 'from-purple/35 via-purple/15 to-purple/5',
+    chip: 'bg-purple/12 text-purple',
+    barra: 'bg-purple/30',
+    solido: 'bg-purple',
+  },
+  success: {
+    fondo: 'from-success/35 via-success/15 to-success/5',
+    chip: 'bg-success/12 text-success',
+    barra: 'bg-success/30',
+    solido: 'bg-success',
+  },
+  warning: {
+    fondo: 'from-warning/35 via-warning/15 to-warning/5',
+    chip: 'bg-warning/12 text-warning',
+    barra: 'bg-warning/30',
+    solido: 'bg-warning',
+  },
+  danger: {
+    fondo: 'from-danger/35 via-danger/15 to-danger/5',
+    chip: 'bg-danger/12 text-danger',
+    barra: 'bg-danger/30',
+    solido: 'bg-danger',
+  },
+  info: {
+    fondo: 'from-info/35 via-info/15 to-info/5',
+    chip: 'bg-info/12 text-info',
+    barra: 'bg-info/30',
+    solido: 'bg-info',
+  },
+} as const;
+
+const tabs: Tab[] = [
+  {
+    slug: 'ventas',
+    ancla: 'como-funciona',
+    etiqueta: 'Ventas',
+    icono: 'recibo',
+    color: 'accent',
+    captura: '/images/producto/ventas.webp',
+    titulo: 'Cada pedido, cerrado donde nace.',
+    items: [
+      {
+        titulo: 'Carga en segundos',
+        cuerpo: 'Buscás el producto, confirmás, y el pedido queda cargado sin planillas de por medio.',
+      },
+      {
+        titulo: 'Cobro en el mismo lugar',
+        cuerpo: 'Registrás el pago junto con la venta y el pedido cambia de estado solo.',
+      },
+      {
+        titulo: 'Todo el equipo ve lo mismo',
+        cuerpo: 'Cada vendedor trabaja sobre el mismo listado, actualizado al instante.',
+      },
+    ],
+  },
+  {
+    slug: 'facturacion',
+    etiqueta: 'Facturación',
+    icono: 'documento',
+    color: 'purple',
+    titulo: 'El documento sale con la venta.',
+    items: [
+      {
+        titulo: 'Boleta y factura electrónica',
+        cuerpo: 'Se emiten al confirmar el pago, sin abrir otro sistema ni volver a cargar los datos.',
+      },
+      {
+        titulo: 'Al SII, sin intermediarios',
+        cuerpo: 'El documento se envía y te queda el estado a la vista: enviado, aceptado o con reparo.',
+      },
+      {
+        titulo: 'Le llega al cliente',
+        cuerpo: 'El comprobante sale por mail apenas queda aceptado, con el PDF adjunto.',
+      },
+    ],
+  },
+  {
+    slug: 'inventario',
+    etiqueta: 'Inventario',
+    icono: 'caja',
+    color: 'success',
+    captura: '/images/producto/inventario.webp',
+    titulo: 'El stock se corrige solo.',
+    items: [
+      {
+        titulo: 'Descuento automático',
+        cuerpo: 'Cada venta baja el stock y cada compra lo repone, en tiempo real.',
+      },
+      {
+        titulo: 'Varias sucursales',
+        cuerpo: 'Mirás el stock de cada bodega por separado o todo junto, sin cruzar planillas.',
+      },
+      {
+        titulo: 'Alertas antes de quebrar',
+        cuerpo: 'Te avisa cuando un producto llega al mínimo que vos definiste.',
+      },
+    ],
+  },
+  {
+    slug: 'compras',
+    etiqueta: 'Compras',
+    icono: 'carro',
+    color: 'warning',
+    captura: '/images/producto/compras.webp',
+    titulo: 'Reponés antes de quedarte corto.',
+    items: [
+      {
+        titulo: 'Órdenes a proveedores',
+        cuerpo: 'Armás la orden desde el mismo listado de stock y queda con su historial.',
+      },
+      {
+        titulo: 'Recepción parcial',
+        cuerpo: 'Si llega la mitad, recibís la mitad. El resto queda pendiente y no se pierde.',
+      },
+      {
+        titulo: 'Costos al día',
+        cuerpo: 'Cada recepción actualiza el costo del producto y con eso el margen real.',
+      },
+    ],
+  },
+  {
+    slug: 'automatizaciones',
+    ancla: 'automatizaciones',
+    etiqueta: 'Automatizaciones',
+    icono: 'rayo',
+    color: 'danger',
+    titulo: 'Las reglas trabajan cuando vos no estás.',
+    items: [
+      {
+        titulo: 'Se disparan solas',
+        cuerpo: 'Definís la condición una vez y la regla corre en cada venta, compra o cambio de stock.',
+      },
+      {
+        titulo: 'Avisos donde los leés',
+        cuerpo: 'Stock bajo, pago vencido o pedido trabado te llegan por WhatsApp o por mail.',
+      },
+      {
+        titulo: 'Sin tocar código',
+        cuerpo: 'Se arman desde el panel, eligiendo de listas. No hace falta nadie técnico.',
+      },
+    ],
+  },
+  {
+    slug: 'reportes',
+    ancla: 'reportes',
+    etiqueta: 'Reportes',
+    icono: 'grafico',
+    color: 'info',
+    captura: '/images/producto/reportes.webp',
+    titulo: 'Los números, sin armar la planilla.',
+    items: [
+      {
+        titulo: 'Al día, siempre',
+        cuerpo: 'Ventas, margen y caja se recalculan con cada movimiento que carga el equipo.',
+      },
+      {
+        titulo: 'Ranking de productos',
+        cuerpo: 'Qué se vende, qué se estancó y cuál te deja plata de verdad.',
+      },
+      {
+        titulo: 'Exportable',
+        cuerpo: 'Bajás cualquier vista a Excel cuando la necesitás para afuera.',
+      },
+    ],
+  },
+];
+
+/** Datos de los mockups. Todos comparten el marco; cambia el contenido. */
+const pedidos = [
+  { ini: 'CA', cliente: 'Comercial Andes', detalle: 'Pedido #4821', monto: '$184.200', estado: 'Pagado', tono: 'ok' },
+  { ini: 'TL', cliente: 'Textiles Lía', detalle: 'Pedido #4820', monto: '$52.900', estado: 'Pendiente', tono: 'warn' },
+  { ini: 'FS', cliente: 'Ferretería Sur', detalle: 'Pedido #4819', monto: '$97.400', estado: 'Pagado', tono: 'ok' },
+  { ini: 'DR', cliente: 'Distribuidora RM', detalle: 'Pedido #4818', monto: '$310.000', estado: 'Enviado', tono: 'mute' },
+  { ini: 'KS', cliente: 'Kiosco El Sol', detalle: 'Pedido #4817', monto: '$18.750', estado: 'Pagado', tono: 'ok' },
+  { ini: 'PM', cliente: 'Panadería Mari', detalle: 'Pedido #4816', monto: '$23.100', estado: 'Pendiente', tono: 'warn' },
+];
+
+const reglas = [
+  { nombre: 'Stock bajo → avisar al encargado', cuando: 'Cuando quedan menos de 10 unidades', on: true },
+  { nombre: 'Pedido pagado → emitir boleta', cuando: 'Al confirmar el pago', on: true },
+  { nombre: 'Cliente nuevo → mensaje de bienvenida', cuando: 'En la primera compra', on: true },
+  { nombre: 'Pago vencido → recordatorio', cuando: 'A los 3 días del vencimiento', on: false },
+];
+
+const documentos = [
+  { tipo: 'Factura electrónica', folio: 'F 0001-4821', monto: '$184.200', estado: 'Aceptado', tono: 'ok' },
+  { tipo: 'Boleta electrónica', folio: 'B 0001-9134', monto: '$52.900', estado: 'Aceptado', tono: 'ok' },
+  { tipo: 'Factura electrónica', folio: 'F 0001-4820', monto: '$97.400', estado: 'Enviado', tono: 'mute' },
+  { tipo: 'Nota de crédito', folio: 'NC 0001-0212', monto: '$12.400', estado: 'Aceptado', tono: 'ok' },
+  { tipo: 'Boleta electrónica', folio: 'B 0001-9133', monto: '$18.750', estado: 'Con reparo', tono: 'warn' },
+];
+
+const ordenes = [
+  { proveedor: 'Cementos del Sur', oc: 'OC #312', monto: '$1.240.000', estado: 'Recibida', tono: 'ok' },
+  { proveedor: 'Aceros Maipo', oc: 'OC #311', monto: '$860.500', estado: 'Parcial', tono: 'warn' },
+  { proveedor: 'Distribuidora Norte', oc: 'OC #310', monto: '$415.000', estado: 'En camino', tono: 'mute' },
+  { proveedor: 'Ferretera Andina', oc: 'OC #309', monto: '$228.900', estado: 'Recibida', tono: 'ok' },
+  { proveedor: 'Áridos Quilicura', oc: 'OC #308', monto: '$96.300', estado: 'Borrador', tono: 'mute' },
+];
+
+const stock = [
+  { producto: 'Cemento Portland 25kg', bodega: 'Central', unidades: 240, pct: 82 },
+  { producto: 'Malla electrosoldada 6mm', bodega: 'Central', unidades: 96, pct: 54 },
+  { producto: 'Alambre recocido 2mm', bodega: 'Sucursal Sur', unidades: 31, pct: 18 },
+  { producto: 'Arena fina m³', bodega: 'Central', unidades: 12, pct: 7 },
+];
+
+const kpis = [
+  { rotulo: 'Ventas del mes', valor: '$8.432.100', delta: '+12,4%' },
+  { rotulo: 'Margen', valor: '31,8%', delta: '+1,2 pts' },
+  { rotulo: 'Pedidos', valor: '412', delta: '+38' },
+];
+
+/** Alturas de las barras del gráfico de reportes, en porcentaje. */
+const barras = [38, 52, 44, 67, 58, 74, 63, 81, 70, 88, 76, 94];
+---
+
+<section id="producto" class="relative overflow-hidden bg-canvas" data-activo="ventas">
+  <div class="mx-auto w-full max-w-[1200px] px-5 py-16 md:px-10 lg:py-20">
+    {/* Encabezado */}
+    <div class="flex items-center gap-1.5 pl-0.5">
+      <span class="h-[5px] w-2.5 rounded-full bg-muted"></span>
+      <span class="text-[13px] leading-[1.3] text-muted">Casos de uso</span>
+    </div>
+    <h2 class="mt-4 max-w-[760px] font-serif text-[26px] leading-[1.05] font-light tracking-[-0.05em] text-ink sm:text-[30px] lg:text-[36px]">
+      Una sola plataforma.<br /><span class="text-muted/60">Todo tu equipo adentro.</span>
+    </h2>
+
+    {/* Marco de pestañas + panel */}
+    <div class="mt-10 overflow-hidden rounded-3xl border border-border bg-[#f4f2ec]">
+      {/* Barra de pestañas */}
+      <div class="flex overflow-x-auto p-2.5" role="tablist" aria-label="Casos de uso">
+        {tabs.map((t) => (
+          <button
+            type="button"
+            role="tab"
+            id={t.ancla}
+            data-tab={t.slug}
+            aria-selected={t.slug === 'ventas' ? 'true' : 'false'}
+            aria-controls={`panel-${t.slug}`}
+            tabindex={t.slug === 'ventas' ? 0 : -1}
+            class={`tab-${t.slug} flex flex-1 shrink-0 items-center justify-center gap-2 rounded-2xl px-3 py-3 text-[12.5px] leading-none font-medium whitespace-nowrap text-muted transition-colors duration-200 hover:text-ink`}
+          >
+            <svg viewBox="0 0 24 24" class="h-4 w-4 shrink-0" fill="none" aria-hidden="true">
+              {t.icono === 'recibo' && (
+                <path
+                  d="M5 3.5h14v17l-2.3-1.6-2.35 1.6L12 18.9l-2.35 1.6L7.3 18.9 5 20.5v-17ZM8.5 8h7M8.5 12h7"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              )}
+              {t.icono === 'rayo' && (
+                <path
+                  d="M13 2.5 4.5 13.5H11l-.5 8 8.5-11H13l.5-8Z"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              )}
+              {t.icono === 'documento' && (
+                <path
+                  d="M6 2.5h8l4 4v15H6v-19ZM14 2.5v4h4M9 12h6M9 16h6"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              )}
+              {t.icono === 'carro' && (
+                <path
+                  d="M2.5 3.5h2.2l2.3 11h10.5l2-7.5H6M9 20a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              )}
+              {t.icono === 'caja' && (
+                <path
+                  d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5v-9ZM3.5 7.5 12 12m0 0 8.5-4.5M12 12v9"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              )}
+              {t.icono === 'grafico' && (
+                <path
+                  d="M4 20V4m0 16h16M7.5 16.5l3.5-4.5 3 2.5 4.5-6"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              )}
+            </svg>
+            {t.etiqueta}
+          </button>
+        ))}
+      </div>
+
+      {/* Paneles */}
+      {tabs.map((t) => (
+        <div
+          id={`panel-${t.slug}`}
+          role="tabpanel"
+          data-panel={t.slug}
+          aria-labelledby={t.ancla}
+          class="panel bg-surface"
+        >
+          <div class="flex flex-col gap-10 p-7 md:p-10 lg:flex-row lg:items-center lg:gap-12">
+            {/* Izquierda: texto */}
+            <div class="flex w-full flex-col items-start lg:w-[38%]">
+              <h3 class="max-w-[420px] font-serif text-[22px] leading-[1.1] font-light tracking-[-0.04em] text-ink lg:text-[26px]">
+                {t.titulo}
+              </h3>
+
+              <ul class="mt-6 flex flex-col gap-5">
+                {t.items.map((it) => (
+                  <li class="flex items-start gap-3">
+                    <span class={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg ${tono[t.color].chip}`}>
+                      <svg viewBox="0 0 20 20" class="h-3.5 w-3.5" fill="none" aria-hidden="true">
+                        <path
+                          d="m4.5 10.5 3.5 3.5 7.5-8"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </span>
+                    <div>
+                      <div class="text-[14px] leading-[1.3] font-medium text-ink">{it.titulo}</div>
+                      <p class="mt-1 max-w-[320px] text-[12px] leading-[1.5] text-muted">{it.cuerpo}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              <a
+                href="#empezar"
+                class="boton-relieve mt-8 flex h-10 w-full items-center justify-center rounded-lg bg-accent-deep px-5 text-[13px] font-medium text-canvas transition-colors duration-200 hover:bg-accent-deep/90 sm:w-auto sm:min-w-[220px]"
+              >
+                Probar OpenSale gratis
+              </a>
+            </div>
+
+            {/* Derecha: mockup sobre el fondo */}
+            <div
+              class={`grano relative w-full overflow-hidden rounded-2xl bg-gradient-to-br lg:w-[62%] ${tono[t.color].fondo} ${
+                t.captura ? 'p-5 sm:p-8' : 'h-[340px] sm:h-[420px] lg:h-[480px]'
+              }`}
+            >
+
+              {t.captura ? (
+                /*
+                 * La captura es de 1400x689 (casi 2:1) y el marco es mucho mas
+                 * cuadrado. Con object-cover se recortaban los costados y se
+                 * perdian el sidebar y el carrito, asi que en vez de encajarla
+                 * a la fuerza flota centrada y entera, respetando su relacion.
+                 */
+                <div class="relative z-[2] overflow-hidden rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.04),0_10px_34px_rgba(0,0,0,0.12),0_0_0_1px_rgba(28,26,21,0.06),0_0_0_7px_rgba(255,255,255,0.55)]">
+                  <img
+                    src={t.captura}
+                    width="1400"
+                    height="689"
+                    loading="lazy"
+                    decoding="async"
+                    alt={`Pantalla de ${t.etiqueta.toLowerCase()} en OpenSale`}
+                    class="block w-full"
+                  />
+                </div>
+              ) : (
+              <div
+                class="absolute inset-x-6 top-8 bottom-0 overflow-hidden rounded-t-xl bg-surface z-[2] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_8px_28px_rgba(0,0,0,0.08),0_0_0_1px_rgba(28,26,21,0.06),0_0_0_7px_rgba(255,255,255,0.55)] sm:inset-x-10 sm:top-10"
+                role="img"
+                aria-label={`Pantalla de ${t.etiqueta.toLowerCase()} en OpenSale`}
+              >
+                <div class="flex items-center gap-2.5 border-b border-border px-4 py-3">
+                  <span class="text-[12px] font-medium text-ink">{t.etiqueta}</span>
+                  <span class="ml-auto h-6 w-28 rounded-md bg-ink/[0.05]"></span>
+                  <span class="h-6 w-6 rounded-full bg-ink/[0.06]"></span>
+                </div>
+
+                {t.slug === 'ventas' && (
+                  <div class="divide-y divide-border">
+                    {pedidos.map((p) => (
+                      <div class="flex items-center gap-3 px-4 py-2.5">
+                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ink/[0.06] text-[10px] font-medium text-muted">
+                          {p.ini}
+                        </span>
+                        <div class="min-w-0 flex-1">
+                          <div class="truncate text-[12px] font-medium text-ink">{p.cliente}</div>
+                          <div class="truncate text-[11px] text-muted">{p.detalle}</div>
+                        </div>
+                        <span class="hidden text-[12px] font-medium text-ink sm:block">{p.monto}</span>
+                        <span
+                          class={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                            p.tono === 'ok'
+                              ? 'bg-success/10 text-success'
+                              : p.tono === 'warn'
+                                ? 'bg-warning/10 text-warning'
+                                : 'bg-ink/[0.06] text-muted'
+                          }`}
+                        >
+                          {p.estado}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {t.slug === 'automatizaciones' && (
+                  <div class="divide-y divide-border">
+                    {reglas.map((r) => (
+                      <div class="flex items-center gap-3 px-4 py-3.5">
+                        <div class="min-w-0 flex-1">
+                          <div class="truncate text-[12px] font-medium text-ink">{r.nombre}</div>
+                          <div class="truncate text-[11px] text-muted">{r.cuando}</div>
+                        </div>
+                        <span
+                          class={`flex h-[18px] w-8 shrink-0 items-center rounded-full px-0.5 ${
+                            r.on ? 'justify-end bg-success' : 'justify-start bg-ink/[0.12]'
+                          }`}
+                        >
+                          <span class="h-3.5 w-3.5 rounded-full bg-surface"></span>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {t.slug === 'facturacion' && (
+                  <div class="divide-y divide-border">
+                    {documentos.map((d) => (
+                      <div class="flex items-center gap-3 px-4 py-3">
+                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-purple/12 text-purple">
+                          <svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" aria-hidden="true">
+                            <path
+                              d="M6 2.5h8l4 4v15H6v-19ZM14 2.5v4h4"
+                              stroke="currentColor"
+                              stroke-width="1.8"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                          </svg>
+                        </span>
+                        <div class="min-w-0 flex-1">
+                          <div class="truncate text-[12px] font-medium text-ink">{d.tipo}</div>
+                          <div class="truncate text-[11px] text-muted">{d.folio}</div>
+                        </div>
+                        <span class="hidden text-[12px] font-medium text-ink sm:block">{d.monto}</span>
+                        <span
+                          class={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                            d.tono === 'ok'
+                              ? 'bg-success/10 text-success'
+                              : d.tono === 'warn'
+                                ? 'bg-warning/10 text-warning'
+                                : 'bg-ink/[0.06] text-muted'
+                          }`}
+                        >
+                          {d.estado}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {t.slug === 'compras' && (
+                  <div class="divide-y divide-border">
+                    {ordenes.map((o) => (
+                      <div class="flex items-center gap-3 px-4 py-3">
+                        <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-warning/12 text-warning">
+                          <svg viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" aria-hidden="true">
+                            <path
+                              d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5v-9ZM3.5 7.5 12 12l8.5-4.5"
+                              stroke="currentColor"
+                              stroke-width="1.8"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            />
+                          </svg>
+                        </span>
+                        <div class="min-w-0 flex-1">
+                          <div class="truncate text-[12px] font-medium text-ink">{o.proveedor}</div>
+                          <div class="truncate text-[11px] text-muted">{o.oc}</div>
+                        </div>
+                        <span class="hidden text-[12px] font-medium text-ink sm:block">{o.monto}</span>
+                        <span
+                          class={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                            o.tono === 'ok'
+                              ? 'bg-success/10 text-success'
+                              : o.tono === 'warn'
+                                ? 'bg-warning/10 text-warning'
+                                : 'bg-ink/[0.06] text-muted'
+                          }`}
+                        >
+                          {o.estado}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {t.slug === 'inventario' && (
+                  <div class="divide-y divide-border">
+                    {stock.map((s) => (
+                      <div class="px-4 py-3">
+                        <div class="flex items-baseline gap-3">
+                          <span class="min-w-0 flex-1 truncate text-[12px] font-medium text-ink">{s.producto}</span>
+                          <span class="shrink-0 text-[11px] text-muted">{s.bodega}</span>
+                          <span class="shrink-0 text-[12px] font-medium text-ink">{s.unidades} u</span>
+                        </div>
+                        <div class="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-ink/[0.06]">
+                          <div
+                            class={`h-full rounded-full ${s.pct < 25 ? 'bg-warning' : 'bg-success'}`}
+                            style={`width: ${s.pct}%`}
+                          >
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {t.slug === 'reportes' && (
+                  <div class="p-4">
+                    <div class="grid grid-cols-3 gap-2.5">
+                      {kpis.map((k) => (
+                        <div class="rounded-xl bg-ink/[0.03] p-3">
+                          <div class="text-[10px] text-muted">{k.rotulo}</div>
+                          <div class="mt-1 text-[15px] font-medium tracking-[-0.02em] text-ink">{k.valor}</div>
+                          <div class="mt-0.5 text-[10px] font-medium text-success">{k.delta}</div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div class="mt-4 flex h-[150px] items-end gap-1.5">
+                      {barras.map((alto) => (
+                        <span class={`flex-1 rounded-t-[3px] ${tono[t.color].barra}`} style={`height: ${alto}%`}></span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  /*
+   * Sin JS se ve la pestaña que el HTML trae marcada como activa: los paneles
+   * arrancan ocultos y solo el que coincide con data-activo se muestra.
+   */
+  .panel {
+    display: none;
+  }
+
+  [data-activo='ventas'] [data-panel='ventas'],
+  [data-activo='facturacion'] [data-panel='facturacion'],
+  [data-activo='inventario'] [data-panel='inventario'],
+  [data-activo='compras'] [data-panel='compras'],
+  [data-activo='automatizaciones'] [data-panel='automatizaciones'],
+  [data-activo='reportes'] [data-panel='reportes'] {
+    display: block;
+  }
+
+  /* La pestaña activa sube a pastilla blanca, como en el referente. */
+  [data-activo='ventas'] .tab-ventas,
+  [data-activo='facturacion'] .tab-facturacion,
+  [data-activo='inventario'] .tab-inventario,
+  [data-activo='compras'] .tab-compras,
+  [data-activo='automatizaciones'] .tab-automatizaciones,
+  [data-activo='reportes'] .tab-reportes {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    box-shadow: 0 1px 2px rgb(28 26 21 / 0.06);
+  }
+
+  /*
+   * El icono de la pestaña activa toma el color de su modulo. Va solo en el
+   * icono y no en la etiqueta: son colores medios, y como texto de 13px no
+   * llegarian al contraste minimo. El icono es decorativo, asi que puede.
+   */
+  [data-activo='ventas'] .tab-ventas svg {
+    color: var(--color-accent);
+  }
+  [data-activo='facturacion'] .tab-facturacion svg {
+    color: var(--color-purple);
+  }
+  [data-activo='inventario'] .tab-inventario svg {
+    color: var(--color-success);
+  }
+  [data-activo='compras'] .tab-compras svg {
+    color: var(--color-warning);
+  }
+  [data-activo='automatizaciones'] .tab-automatizaciones svg {
+    color: var(--color-danger);
+  }
+  [data-activo='reportes'] .tab-reportes svg {
+    color: var(--color-info);
+  }
+</style>
+
+<script>
+  const seccion = document.getElementById('producto');
+
+  if (seccion) {
+    const botones = [...seccion.querySelectorAll<HTMLButtonElement>('[data-tab]')];
+
+    const abrir = (slug: string, mover = false) => {
+      if (!botones.some((b) => b.dataset.tab === slug)) return;
+
+      seccion.dataset.activo = slug;
+      botones.forEach((b) => {
+        const activo = b.dataset.tab === slug;
+        b.setAttribute('aria-selected', String(activo));
+        // Solo la pestaña activa queda en el orden de tabulacion: dentro de un
+        // tablist las flechas mueven entre pestañas, no el Tab.
+        b.tabIndex = activo ? 0 : -1;
+        if (activo && mover) b.focus();
+      });
+    };
+
+    botones.forEach((boton, i) => {
+      boton.addEventListener('click', () => abrir(boton.dataset.tab ?? ''));
+
+      boton.addEventListener('keydown', (e) => {
+        const paso = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!paso) return;
+        e.preventDefault();
+        const destino = botones[(i + paso + botones.length) % botones.length];
+        abrir(destino.dataset.tab ?? '', true);
+      });
+    });
+
+    /**
+     * El menu Producto linkea #como-funciona, #automatizaciones y #reportes, que
+     * son ids de botones de aca adentro. Al llegar por uno de esos links hay que
+     * abrir la pestaña, no solo scrollear hasta ella.
+     */
+    const desdeElHash = () => {
+      const id = location.hash.slice(1);
+      if (!id) return;
+      const boton = botones.find((b) => b.id === id);
+      if (boton) abrir(boton.dataset.tab ?? '');
+    };
+
+    desdeElHash();
+    window.addEventListener('hashchange', desdeElHash);
+  }
+</script>

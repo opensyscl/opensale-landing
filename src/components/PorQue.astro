@@ -1,0 +1,175 @@
+---
+/**
+ * Seccion "Por que OpenSale" (replica de la seccion Sticky Features del
+ * template Solva): tres tarjetas que se apilan al scrollear, cada una con la
+ * acuarela y un mini-panel flotante a la izquierda y el texto a la derecha.
+ *
+ * El apilado es CSS puro: cada tarjeta es sticky con un top un poco mayor que
+ * la anterior, asi la de arriba asoma por el borde cuando la tapa la siguiente.
+ * Sin JS de por medio.
+ */
+import { site } from '../config/site';
+
+type Beneficio = {
+  titulo: string;
+  cuerpo: string;
+  fondo: string;
+  /** Cual de los mini-paneles va adentro. */
+  panel: 'venta' | 'caja' | 'margen';
+  /** Clases literales del offset: Tailwind necesita strings completos. */
+  offset: string;
+};
+
+const beneficios: Beneficio[] = [
+  {
+    titulo: 'Una venta, un solo movimiento.',
+    cuerpo:
+      'Cargás el pedido y con eso baja el stock, sale la boleta y se actualiza la caja. No hay que anotar lo mismo en tres lados.',
+    fondo: '/images/features/card-1.png',
+    panel: 'venta',
+    offset: 'lg:top-[100px]',
+  },
+  {
+    titulo: 'La caja cuadra sola.',
+    cuerpo:
+      'Al cerrar, el sistema compara lo que declaraste contra lo que registró durante el día y te muestra la diferencia al peso.',
+    fondo: '/images/features/card-2.png',
+    panel: 'caja',
+    offset: 'lg:top-[116px]',
+  },
+  {
+    titulo: 'Sabés qué te deja plata.',
+    cuerpo:
+      'El ranking ordena por margen y no por unidades vendidas. Lo que más sale no siempre es lo que más rinde.',
+    fondo: '/images/features/card-3.png',
+    panel: 'margen',
+    offset: 'lg:top-[132px]',
+  },
+];
+
+/** Datos de los mini-paneles. */
+const efectos = [
+  { texto: 'Stock descontado', detalle: '3 productos' },
+  { texto: 'Boleta emitida', detalle: 'B 0001-9134' },
+  { texto: 'Caja actualizada', detalle: '+$184.200' },
+];
+
+const margenes = [
+  { producto: 'Cemento Portland 25kg', margen: '38%', pct: 92 },
+  { producto: 'Malla electrosoldada', margen: '31%', pct: 74 },
+  { producto: 'Alambre recocido 2mm', margen: '12%', pct: 29 },
+];
+---
+
+<section id="por-que" class="bg-canvas">
+  <div class="mx-auto w-full max-w-[1200px] px-5 pt-16 md:px-10 lg:pt-20">
+    {/* Encabezado */}
+    <div class="flex items-center gap-1.5 pl-0.5">
+      <span class="h-[5px] w-2.5 rounded-full bg-muted"></span>
+      <span class="text-[13px] leading-[1.3] text-muted">Por qué OpenSale</span>
+    </div>
+    <h2 class="mt-4 max-w-[680px] font-serif text-[26px] leading-[1.05] font-light tracking-[-0.05em] text-ink sm:text-[30px] lg:text-[36px]">
+      Un solo sistema.<br /><span class="text-muted/60">Todo lo que hoy anotás dos veces.</span>
+    </h2>
+
+    {/* Tarjetas apiladas */}
+    <div class="mt-10 flex flex-col gap-6 pb-16 lg:pb-20">
+      {beneficios.map((b) => (
+        <div class={`lg:sticky ${b.offset}`}>
+          <div class="grano grid grid-cols-1 overflow-hidden rounded-3xl border border-border bg-[#f4f2ec] lg:grid-cols-2">
+            {/* Izquierda: acuarela con el mini-panel encima */}
+            <div class="relative flex min-h-[300px] items-center justify-center overflow-hidden p-6 lg:min-h-[380px]">
+              <img src={b.fondo} alt="" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover" />
+
+              <div
+                class="relative z-[2] w-full max-w-[300px] rounded-xl bg-surface p-4 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_12px_34px_rgba(0,0,0,0.14),0_0_0_1px_rgba(28,26,21,0.06)]"
+                role="img"
+                aria-label={b.titulo}
+              >
+                {b.panel === 'venta' && (
+                  <>
+                    <div class="flex items-center gap-2">
+                      <span class="flex h-6 w-6 items-center justify-center rounded-full bg-success/12 text-success">
+                        <svg viewBox="0 0 20 20" class="h-3 w-3" fill="none" aria-hidden="true">
+                          <path d="m4.5 10.5 3.5 3.5 7.5-8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                      </span>
+                      <span class="text-[12px] font-medium text-ink">Pedido #4821 confirmado</span>
+                    </div>
+                    <ul class="mt-3 flex flex-col gap-2 border-t border-border pt-3">
+                      {efectos.map((e) => (
+                        <li class="flex items-center justify-between gap-3">
+                          <span class="text-[11px] text-muted">{e.texto}</span>
+                          <span class="text-[11px] font-medium text-ink">{e.detalle}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+
+                {b.panel === 'caja' && (
+                  <>
+                    <div class="flex items-center justify-between gap-3">
+                      <span class="text-[12px] font-medium text-ink">Cierre de caja</span>
+                      <span class="rounded-full bg-success/10 px-2 py-0.5 text-[10px] font-medium text-success">Cuadrada</span>
+                    </div>
+                    <div class="mt-3 flex flex-col gap-2 border-t border-border pt-3">
+                      <div class="flex items-center justify-between">
+                        <span class="text-[11px] text-muted">Declarado</span>
+                        <span class="text-[11px] font-medium text-ink">$612.400</span>
+                      </div>
+                      <div class="flex items-center justify-between">
+                        <span class="text-[11px] text-muted">Registrado</span>
+                        <span class="text-[11px] font-medium text-ink">$612.400</span>
+                      </div>
+                      <div class="flex items-center justify-between border-t border-border pt-2">
+                        <span class="text-[11px] font-medium text-ink">Diferencia</span>
+                        <span class="text-[11px] font-medium text-success">$0</span>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {b.panel === 'margen' && (
+                  <>
+                    <div class="flex items-center justify-between gap-3">
+                      <span class="text-[12px] font-medium text-ink">Ranking por margen</span>
+                      <span class="text-[10px] text-muted">Este mes</span>
+                    </div>
+                    <div class="mt-3 flex flex-col gap-2.5 border-t border-border pt-3">
+                      {margenes.map((m) => (
+                        <div>
+                          <div class="flex items-baseline justify-between gap-3">
+                            <span class="truncate text-[11px] text-ink">{m.producto}</span>
+                            <span class="shrink-0 text-[11px] font-medium text-ink">{m.margen}</span>
+                          </div>
+                          <div class="mt-1 h-1 w-full overflow-hidden rounded-full bg-ink/[0.06]">
+                            <div class="h-full rounded-full bg-accent" style={`width: ${m.pct}%`}></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Derecha: texto */}
+            <div class="relative z-[2] flex flex-col items-start justify-center p-7 md:p-10">
+              <h3 class="max-w-[360px] font-serif text-[22px] leading-[1.1] font-light tracking-[-0.04em] text-ink lg:text-[26px]">
+                {b.titulo}
+              </h3>
+              <p class="mt-3 max-w-[380px] text-[13px] leading-[1.55] text-muted">{b.cuerpo}</p>
+              <a
+                href="#empezar"
+                class="boton-relieve mt-6 flex h-10 items-center justify-center rounded-lg bg-accent-deep px-5 text-[13px] font-medium text-canvas transition-colors duration-200 hover:bg-accent-deep/90"
+              >
+                Empezar gratis
+              </a>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
