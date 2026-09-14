@@ -57,8 +57,14 @@
   --color-primary-foreground: #fbfaf6;
   --color-muted: #56524a;
   --color-border: #e4e4e1;
+  --color-accent: #2f8b91;
+  /* Fondo de boton: 5,6:1 con el texto en canvas. El accent normal da 3,9. */
+  --color-accent-deep: #256e73;
   --color-success: #3f9e6f;
   --color-warning: #c2872a;
+  --color-danger: #b04b34;
+  --color-purple: #6b5bb5;
+  --color-info: #3d6ea8;
 
   /* Tipografia */
   --font-sans: 'Onest', ui-sans-serif, system-ui, sans-serif;
@@ -80,6 +86,58 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /*
+   * Boton primario con relieve. Son dos sombras: un filo blanco por dentro del
+   * borde de arriba, que simula la luz pegandole a un boton fisico, y una
+   * sombra de color abajo en vez de negro, que lo asienta sin ensuciarlo.
+   *
+   * La sombra sale del accent y no del accent-deep: usar el mismo tono del
+   * fondo la deja invisible.
+   */
+  .boton-relieve {
+    box-shadow:
+      inset 0 3px 0 0 rgb(255 255 255 / 0.2),
+      0 2px 4px 0 color-mix(in srgb, var(--color-accent) 35%, transparent);
+  }
+
+  /* Al apretarlo el filo se achica: el boton se hunde. */
+  .boton-relieve:active {
+    box-shadow:
+      inset 0 1px 0 0 rgb(255 255 255 / 0.15),
+      0 1px 2px 0 color-mix(in srgb, var(--color-accent) 30%, transparent);
+  }
+
+  /*
+   * Grano: capa de ruido tileada sobre las imagenes y los fondos de color, como
+   * hace el referente. Le saca el plano digital a los degradados y le da textura
+   * a las capturas sin taparlas.
+   *
+   * Pide que el contenedor sea position: relative y tenga overflow oculto si es
+   * redondeado. Hereda el radio para no pasarse de las esquinas.
+   */
+  .grano {
+    position: relative;
+  }
+
+  .grano::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    background-image: url('/images/grano.png');
+    background-repeat: repeat;
+    background-size: 160px auto;
+    opacity: 0.05;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .grano::after {
+      display: none;
+    }
   }
 
   ::selection {
