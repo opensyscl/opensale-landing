@@ -26,6 +26,7 @@
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
+    "simple-icons": "^16.31.0",
     "wawoff2": "^2.0.1"
   }
 }

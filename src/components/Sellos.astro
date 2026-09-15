@@ -1,0 +1,31 @@
+---
+/**
+ * Fila de sellos de confianza. Va justo antes del cierre, que es donde el
+ * visitante decide si deja los datos de su negocio y una tarjeta.
+ *
+ * Cada sello lleva una linea de explicacion y no solo un icono: un candado
+ * suelto no dice nada, "la tarjeta nunca toca nuestros servidores" si. Y todo
+ * lo que se afirma aca esta implementado — ver confianza.ts.
+ */
+import { sellos, iconosSello } from '../data/confianza';
+---
+
+<section aria-labelledby="sellos-titulo" class="bg-canvas">
+  <div class="mx-auto w-full max-w-[1200px] px-5 pb-4 md:px-10">
+    <h2 id="sellos-titulo" class="sr-only">Seguridad y respaldo</h2>
+
+    <ul class="grid grid-cols-1 gap-px overflow-hidden rounded-3xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+      {sellos.map((s) => (
+        <li class="flex flex-col gap-2.5 bg-surface p-6">
+          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-accent/10 text-accent-deep">
+            <svg viewBox="0 0 24 24" class="h-[18px] w-[18px]" fill="currentColor" aria-hidden="true">
+              <path d={iconosSello[s.icono]} />
+            </svg>
+          </span>
+          <span class="text-[15px] leading-[1.3] font-medium tracking-[-0.01em] text-ink">{s.titulo}</span>
+          <span class="text-[13px] leading-[1.45] text-muted">{s.detalle}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

@@ -10,6 +10,7 @@
 import Base from '../layouts/Base.astro';
 import AnnouncementBar from '../components/AnnouncementBar.astro';
 import Header from '../components/react/Header';
+import Sellos from '../components/Sellos.astro';
 import Cierre from '../components/Cierre.astro';
 import { planes, grupos } from '../data/planes';
 import { aplicacion } from '../lib/schema';
@@ -304,6 +305,7 @@ const columnas = [...escalera, routes];
       </div>
     </section>
 
+    <Sellos />
     <Cierre />
   </main>
 </Base>

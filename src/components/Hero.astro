@@ -3,21 +3,12 @@
  * Hero de dos columnas (replica del template Solva de Framer):
  *  - Izquierda: badge, titulo serif grande, parrafo y CTA.
  *  - Derecha: imagen de fondo (flores) + captura real del panel, con ring blanco.
- *  - Abajo: marquee de logos de marcas.
+ *  - Abajo: marquee de socios e integraciones reales.
  *  - Fondo: halftone animado en canvas 2D, a todo lo ancho de la seccion.
  */
 
-/** Marcas de clientes (placeholder hasta tener las reales). */
-const logos = [
-  'Corebit',
-  'Lumen Labs',
-  'Aerix',
-  'Flare',
-  'Vault',
-  'Driftwave',
-  'Northstar',
-  'Knot',
-];
+import { marcas } from '../data/marcas';
+import { socios } from '../data/confianza';
 ---
 
 <section class="relative overflow-hidden bg-canvas">
@@ -101,17 +92,32 @@ const logos = [
       </div>
     </div>
 
-    {/* Marquee de logos */}
-    <div class="marquee relative mt-16 overflow-hidden lg:mt-24">
-      <div class="marquee-track flex w-max items-center gap-[72px]">
-        {[...logos, ...logos].map((name) => (
-          <span class="flex shrink-0 items-center gap-2 text-[18px] leading-none font-medium tracking-[-0.03em] text-ink/85">
-            <svg viewBox="0 0 24 24" class="h-6 w-6" fill="currentColor" aria-hidden="true">
-              <path d="M12 2 2 20h20L12 2Zm0 5 5.5 9.9h-11L12 7Z" />
-            </svg>
-            {name}
-          </span>
-        ))}
+    {/* Marquee de socios e integraciones */}
+    <div class="mt-16 lg:mt-24">
+      <p class="text-center text-[13px] leading-[1.4] text-muted">
+        Acreditados y conectados con
+      </p>
+
+      <div class="marquee relative mt-6 overflow-hidden">
+        {/*
+          Una sola pista con la lista duplicada: la animacion la corre -50%, o
+          sea exactamente un juego completo, y el bucle no tiene corte. La
+          segunda copia va aria-hidden para que un lector de pantalla no lea
+          dos veces los mismos ocho nombres.
+        */}
+        <ul class="marquee-track flex w-max items-center gap-[56px]">
+          {[...socios.map((s) => ({ ...s, copia: false })), ...socios.map((s) => ({ ...s, copia: true }))].map((s) => (
+            <li
+              class="flex shrink-0 items-center gap-2.5 text-[17px] leading-none font-medium tracking-[-0.03em] text-ink/85"
+              aria-hidden={s.copia ? 'true' : undefined}
+            >
+              <svg viewBox="0 0 24 24" class="h-[22px] w-[22px] shrink-0" fill="currentColor" aria-hidden="true">
+                <path d={marcas[s.marca]} />
+              </svg>
+              {s.nombre}
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   </div>
