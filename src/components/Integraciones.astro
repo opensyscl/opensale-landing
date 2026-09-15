@@ -1,48 +1,50 @@
 ---
+import { marcas } from '../data/marcas';
+
 /**
  * Seccion de integraciones. Todo lo que aparece aca esta configurado de verdad
  * en el ERP (config/services.php y app/Services/), no es una lista de deseos.
  */
-type Item = { nombre: string; que: string };
+type Item = { nombre: string; que: string; marca: keyof typeof marcas };
 type Grupo = { titulo: string; items: Item[] };
 
 const grupos: Grupo[] = [
   {
     titulo: 'Cobros',
     items: [
-      { nombre: 'Transbank Webpay', que: 'Pago con tarjeta en el punto de venta y en línea.' },
-      { nombre: 'Webpay OneClick', que: 'Cobro recurrente de la suscripción, sin volver a pedir la tarjeta.' },
-      { nombre: 'Mercado Pago', que: 'Link de pago y webhook de confirmación automática.' },
+      { marca: 'webpay', nombre: 'Transbank Webpay', que: 'Pago con tarjeta en el punto de venta y en línea.' },
+      { marca: 'oneclick', nombre: 'Webpay OneClick', que: 'Cobro recurrente de la suscripción, sin volver a pedir la tarjeta.' },
+      { marca: 'mercadopago', nombre: 'Mercado Pago', que: 'Link de pago y webhook de confirmación automática.' },
     ],
   },
   {
     titulo: 'Facturación',
     items: [
-      { nombre: 'SII', que: 'Boleta y factura electrónica emitidas y enviadas al servicio.' },
-      { nombre: 'mindicador.cl', que: 'Valor UF del día, para los planes y precios indexados.' },
+      { marca: 'documento', nombre: 'SII', que: 'Boleta y factura electrónica emitidas y enviadas al servicio.' },
+      { marca: 'indicador', nombre: 'mindicador.cl', que: 'Valor UF del día, para los planes y precios indexados.' },
     ],
   },
   {
     titulo: 'Mensajería',
     items: [
-      { nombre: 'WhatsApp', que: 'Avisos y comprobantes al cliente desde tu propio número.' },
-      { nombre: 'Correo', que: 'Comprobantes y recordatorios por mail, con Resend o SES.' },
-      { nombre: 'Slack', que: 'Alertas internas del equipo en el canal que elijas.' },
+      { marca: 'whatsapp', nombre: 'WhatsApp', que: 'Avisos y comprobantes al cliente desde tu propio número.' },
+      { marca: 'resend', nombre: 'Correo', que: 'Comprobantes y recordatorios por mail, con Resend o SES.' },
+      { marca: 'slack', nombre: 'Slack', que: 'Alertas internas del equipo en el canal que elijas.' },
     ],
   },
   {
     titulo: 'Reparto',
     items: [
-      { nombre: 'Mapbox', que: 'Mapa y trazado de las rutas de reparto.' },
-      { nombre: 'Google Maps', que: 'Geocodificación de las direcciones de tus clientes.' },
-      { nombre: 'Notificaciones push', que: 'Avisos al repartidor en la app, vía Firebase.' },
+      { marca: 'mapbox', nombre: 'Mapbox', que: 'Mapa y trazado de las rutas de reparto.' },
+      { marca: 'googlemaps', nombre: 'Google Maps', que: 'Geocodificación de las direcciones de tus clientes.' },
+      { marca: 'firebase', nombre: 'Notificaciones push', que: 'Avisos al repartidor en la app, vía Firebase.' },
     ],
   },
   {
     titulo: 'Infraestructura',
     items: [
-      { nombre: 'Cloudflare R2', que: 'Fotos de productos y documentos, servidos rápido.' },
-      { nombre: 'Turnstile', que: 'Protección de los formularios públicos, sin captchas molestos.' },
+      { marca: 'cloudflare', nombre: 'Cloudflare R2', que: 'Fotos de productos y documentos, servidos rápido.' },
+      { marca: 'cloudflare', nombre: 'Turnstile', que: 'Protección de los formularios públicos, sin captchas molestos.' },
     ],
   },
 ];
@@ -64,9 +66,15 @@ const grupos: Grupo[] = [
           <h3 class="text-[11px] leading-none font-medium tracking-wide text-muted uppercase">{g.titulo}</h3>
           <ul class="mt-4 flex flex-col divide-y divide-border border-t border-border">
             {g.items.map((i) => (
-              <li class="py-3.5">
-                <div class="text-[13px] leading-[1.3] font-medium text-ink">{i.nombre}</div>
-                <p class="mt-1 text-[12px] leading-[1.5] text-muted">{i.que}</p>
+              <li class="flex items-start gap-3 py-3.5">
+                {/* La marca en ink: trece logos a todo color serian una feria. */}
+                <svg viewBox="0 0 24 24" class="mt-px h-[18px] w-[18px] shrink-0 text-ink" fill="currentColor" aria-hidden="true">
+                  <path d={marcas[i.marca]} />
+                </svg>
+                <div>
+                  <div class="text-[13px] leading-[1.3] font-medium text-ink">{i.nombre}</div>
+                  <p class="mt-1 text-[12px] leading-[1.5] text-muted">{i.que}</p>
+                </div>
               </li>
             ))}
           </ul>
