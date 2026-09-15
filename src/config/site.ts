@@ -19,6 +19,15 @@ export const site = {
   appUrl: 'https://app.opensale.example',
   /** Documentacion publica del producto. */
   docsUrl: 'https://docs.erp.opensys.cl',
+  /**
+   * Donde se entrega el formulario de demo.
+   *
+   * VACIO A PROPOSITO: mientras no haya endpoint, el formulario arma un correo
+   * con todo lo cargado y lo abre en el cliente de mail. Eso funciona hoy y no
+   * pierde un solo lead. Cuando exista el endpoint en el ERP, se pone aca y el
+   * formulario pasa a enviarlo por fetch sin que el usuario salga de la pagina.
+   */
+  demoEndpoint: '',
 } as const;
 
 export type Site = typeof site;

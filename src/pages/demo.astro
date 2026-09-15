@@ -1,0 +1,303 @@
+---
+/**
+ * Pedir una demo.
+ *
+ * Dos columnas: a la izquierda lo que se lleva quien la pide, a la derecha el
+ * formulario. Cinco campos y uno solo opcional — cada campo de mas es gente que
+ * abandona a mitad de camino.
+ *
+ * Como se entrega: si site.demoEndpoint tiene valor, va por fetch y el usuario
+ * nunca sale de la pagina. Si esta vacio —que es hoy— arma un correo con todo
+ * lo cargado y lo abre en el cliente de mail. De las dos formas el lead llega;
+ * la segunda es fea pero no se pierde nada mientras no exista el endpoint.
+ */
+import Base from '../layouts/Base.astro';
+import AnnouncementBar from '../components/AnnouncementBar.astro';
+import Header from '../components/react/Header';
+import { site } from '../config/site';
+
+/** Los mismos rubros que el ERP usa en el onboarding. */
+const rubros = [
+  'Abarrotes',
+  'Botillería',
+  'Boutique',
+  'Celulares',
+  'Electrónica',
+  'Farmacia',
+  'Ferretería',
+  'Librería',
+  'Limpieza',
+  'Manicure',
+  'Mascotas',
+  'Minimarket',
+  'Panadería',
+  'Perfumería',
+  'Verdulería',
+  'Zapatería',
+  'Otro',
+];
+
+const promesas = [
+  {
+    titulo: 'Sobre tu negocio, no una genérica',
+    cuerpo: 'Cargamos tus productos antes de la llamada y la recorremos con tus datos.',
+  },
+  {
+    titulo: 'Treinta minutos',
+    cuerpo: 'Por videollamada. Si preferís que vayamos, en Santiago también se puede.',
+  },
+  {
+    titulo: 'Te decimos si no te sirve',
+    cuerpo: 'Si tu operación necesita otra cosa, te lo decimos en la llamada y listo.',
+  },
+];
+
+const campo =
+  'h-11 w-full rounded-lg border border-border bg-surface px-4 text-[13px] text-ink transition-colors duration-200 outline-none placeholder:text-muted/70 focus-visible:border-accent-deep focus-visible:ring-2 focus-visible:ring-accent/30';
+const etiqueta = 'mb-1.5 block text-[12px] font-medium text-ink';
+---
+
+<Base title="Pedir una demo">
+  <AnnouncementBar />
+  <Header client:load />
+
+  <main class="bg-canvas">
+    <div class="mx-auto w-full max-w-[1200px] px-5 py-16 md:px-10 lg:py-20">
+      <div class="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,480px)] lg:gap-16">
+        {/* Izquierda: qué se lleva */}
+        <div class="lg:pt-4">
+          <div class="flex items-center gap-1.5 pl-0.5">
+            <span class="h-[5px] w-2.5 rounded-full bg-muted"></span>
+            <span class="text-[13px] leading-[1.3] text-muted">Demo</span>
+          </div>
+
+          <h1 class="mt-4 max-w-[520px] font-serif text-[30px] leading-[1.05] font-light tracking-[-0.05em] text-ink sm:text-[36px] lg:text-[42px]">
+            Te la mostramos con<br /><span class="text-muted/60">tus propios productos.</span>
+          </h1>
+
+          <p class="mt-4 max-w-[420px] text-[14px] leading-[1.6] text-muted">
+            Contanos qué vendés y armamos la demo sobre eso. Nada de recorrer un catálogo
+            de ejemplo que no se parece a tu local.
+          </p>
+
+          <ul class="mt-10 flex max-w-[440px] flex-col gap-6">
+            {promesas.map((p) => (
+              <li class="flex items-start gap-3">
+                <span class="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-accent/12 text-accent-deep">
+                  <svg viewBox="0 0 20 20" class="h-3.5 w-3.5" fill="none" aria-hidden="true">
+                    <path
+                      d="m4.5 10.5 3.5 3.5 7.5-8"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </span>
+                <div>
+                  <div class="text-[14px] leading-[1.3] font-medium text-ink">{p.titulo}</div>
+                  <p class="mt-1 text-[13px] leading-[1.55] text-muted">{p.cuerpo}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          <p class="mt-10 max-w-[420px] border-t border-border pt-6 text-[13px] leading-[1.6] text-muted">
+            ¿Preferís probarlo solo?{' '}
+            <a href="/registro" class="font-medium text-ink underline underline-offset-2 hover:opacity-70">
+              Creá una cuenta gratis
+            </a>{' '}
+            y empezá ahora mismo. El plan Starter no vence ni pide tarjeta.
+          </p>
+        </div>
+
+        {/* Derecha: el formulario */}
+        <div class="grano relative overflow-hidden rounded-3xl border border-border bg-surface p-7 md:p-8">
+          <form id="form-demo" class="relative z-[2] flex flex-col gap-4" novalidate>
+            <div>
+              <label for="nombre" class={etiqueta}>Tu nombre</label>
+              <input type="text" id="nombre" name="nombre" required autocomplete="name" placeholder="Cómo te llamás" class={campo} />
+            </div>
+
+            <div>
+              <label for="negocio" class={etiqueta}>Nombre del negocio</label>
+              <input type="text" id="negocio" name="negocio" required autocomplete="organization" placeholder="Cómo se llama tu local" class={campo} />
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label for="email" class={etiqueta}>Correo</label>
+                <input type="email" id="email" name="email" required autocomplete="email" placeholder="tu@correo.cl" class={campo} />
+              </div>
+              <div>
+                <label for="telefono" class={etiqueta}>
+                  WhatsApp <span class="font-normal text-muted">· opcional</span>
+                </label>
+                <input type="tel" id="telefono" name="telefono" autocomplete="tel" placeholder="+56 9 ..." class={campo} />
+              </div>
+            </div>
+
+            <div>
+              <label for="rubro" class={etiqueta}>Rubro</label>
+              <select id="rubro" name="rubro" required class={`${campo} cursor-pointer appearance-none bg-[length:18px] bg-[right_0.9rem_center] bg-no-repeat pr-10`} style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2356524a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E&quot;)">
+                <option value="" selected disabled>Elegí el tuyo</option>
+                {rubros.map((r) => <option value={r}>{r}</option>)}
+              </select>
+            </div>
+
+            <div>
+              <label for="mensaje" class={etiqueta}>
+                ¿Qué querés resolver? <span class="font-normal text-muted">· opcional</span>
+              </label>
+              <textarea
+                id="mensaje"
+                name="mensaje"
+                rows="3"
+                placeholder="Lo que hoy te hace perder tiempo"
+                class="w-full resize-none rounded-lg border border-border bg-surface px-4 py-3 text-[13px] leading-[1.5] text-ink transition-colors duration-200 outline-none placeholder:text-muted/70 focus-visible:border-accent-deep focus-visible:ring-2 focus-visible:ring-accent/30"
+              ></textarea>
+            </div>
+
+            {/*
+              Trampa para bots: un campo que una persona nunca ve ni completa.
+              Si viene lleno, se descarta el envio sin decir nada.
+            */}
+            <div class="absolute -left-[9999px]" aria-hidden="true">
+              <label for="apellido2">No completar</label>
+              <input type="text" id="apellido2" name="apellido2" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <p id="error-demo" class="hidden text-[12px] leading-[1.5] text-danger" role="alert"></p>
+
+            <button
+              type="submit"
+              class="boton-relieve mt-2 flex h-11 w-full cursor-pointer items-center justify-center rounded-lg bg-accent-deep text-[13px] font-medium text-canvas transition-colors duration-200 hover:bg-accent-deep/90"
+            >
+              Pedir la demo
+            </button>
+
+            <p class="text-center text-[12px] leading-[1.5] text-muted">
+              Te escribimos dentro del día hábil. Nada de llamados sorpresa.
+            </p>
+          </form>
+
+          {/* Se muestra al enviar */}
+          <div id="listo-demo" class="relative z-[2] hidden flex-col items-center py-10 text-center">
+            <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-success/12 text-success">
+              <svg viewBox="0 0 20 20" class="h-6 w-6" fill="none" aria-hidden="true">
+                <path d="m4.5 10.5 3.5 3.5 7.5-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+            <h2 class="mt-5 font-serif text-[22px] leading-[1.15] font-light tracking-[-0.03em] text-ink">
+              Listo, lo recibimos.
+            </h2>
+            <p class="mt-2 max-w-[300px] text-[13px] leading-[1.6] text-muted">
+              Te escribimos al correo que dejaste dentro del día hábil para coordinar la hora.
+            </p>
+            <a
+              href="/"
+              class="mt-7 flex h-10 items-center justify-center rounded-lg border border-border px-5 text-[13px] font-medium text-ink transition-colors duration-200 hover:bg-ink/[0.04]"
+            >
+              Volver al inicio
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</Base>
+
+<script>
+  import { site } from '../config/site';
+
+  const form = document.getElementById('form-demo') as HTMLFormElement | null;
+  const listo = document.getElementById('listo-demo');
+  const error = document.getElementById('error-demo');
+
+  if (form && listo && error) {
+    const mostrarError = (texto: string) => {
+      error.textContent = texto;
+      error.classList.remove('hidden');
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      error.classList.add('hidden');
+
+      /*
+       * Validamos a mano en vez de dejar el required nativo: el globito del
+       * navegador aparece en el idioma del sistema y no se puede estilar, asi
+       * que en una pagina en castellano queda raro.
+       */
+      const datos = new FormData(form);
+      const falta = ['nombre', 'negocio', 'email', 'rubro'].find(
+        (c) => !String(datos.get(c) ?? '').trim(),
+      );
+      if (falta) {
+        mostrarError('Falta completar algún campo.');
+        form.querySelector<HTMLElement>(`[name="${falta}"]`)?.focus();
+        return;
+      }
+
+      const correo = String(datos.get('email'));
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+        mostrarError('Ese correo no parece válido.');
+        form.querySelector<HTMLElement>('[name="email"]')?.focus();
+        return;
+      }
+
+      // Si el campo trampa viene lleno es un bot: se finge exito y no se envia.
+      if (String(datos.get('apellido2') ?? '').trim()) {
+        form.classList.add('hidden');
+        listo.classList.remove('hidden');
+        listo.classList.add('flex');
+        return;
+      }
+
+      const boton = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+      boton.disabled = true;
+      boton.textContent = 'Enviando…';
+
+      const terminar = () => {
+        form.classList.add('hidden');
+        listo.classList.remove('hidden');
+        listo.classList.add('flex');
+      };
+
+      if (site.demoEndpoint) {
+        try {
+          const r = await fetch(site.demoEndpoint, { method: 'POST', body: datos });
+          if (!r.ok) throw new Error(String(r.status));
+          terminar();
+        } catch {
+          mostrarError('No pudimos enviarlo. Probá de nuevo o escribinos a ' + site.email + '.');
+          boton.disabled = false;
+          boton.textContent = 'Pedir la demo';
+        }
+        return;
+      }
+
+      /*
+       * Sin endpoint: se arma el correo con todo lo cargado. No es elegante,
+       * pero el lead llega igual y no hay que esperar al backend para publicar.
+       */
+      const cuerpo = [
+        `Nombre: ${datos.get('nombre')}`,
+        `Negocio: ${datos.get('negocio')}`,
+        `Correo: ${correo}`,
+        `WhatsApp: ${datos.get('telefono') || '—'}`,
+        `Rubro: ${datos.get('rubro')}`,
+        '',
+        `Qué quiere resolver:`,
+        String(datos.get('mensaje') || '—'),
+      ].join('\n');
+
+      window.location.href =
+        `mailto:${site.email}` +
+        `?subject=${encodeURIComponent('Demo de ' + site.siteName + ' — ' + datos.get('negocio'))}` +
+        `&body=${encodeURIComponent(cuerpo)}`;
+
+      terminar();
+    });
+  }
+</script>
