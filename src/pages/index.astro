@@ -10,9 +10,13 @@ import Integraciones from '../components/Integraciones.astro';
 import Pricing from '../components/Pricing.astro';
 import Cierre from '../components/Cierre.astro';
 import FeatureModal from '../components/FeatureModal.astro';
+import { aplicacion } from '../lib/schema';
 ---
 
-<Base>
+<Base
+  description="OpenSale centraliza pedidos, inventario, caja y facturación en un solo lugar y automatiza lo repetitivo, para que tu equipo venda en vez de cargar planillas."
+  schema={[aplicacion()]}
+>
   <AnnouncementBar />
   <Header client:load />
 

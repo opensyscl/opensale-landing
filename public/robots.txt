@@ -1,4 +1,11 @@
+# Las pantallas de cuenta ya van con noindex; esto ademas evita que se gasten
+# rastreos en ellas. Las dos cosas hacen falta: robots.txt frena el rastreo,
+# el meta saca del indice.
 User-agent: *
 Allow: /
+Disallow: /ingresar
+Disallow: /registro
+Disallow: /recuperar
+Disallow: /revisa-tu-correo
 
 Sitemap: https://opensale.example/sitemap-index.xml

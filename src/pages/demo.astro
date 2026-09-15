@@ -57,7 +57,14 @@ const campo =
 const etiqueta = 'mb-1.5 block text-[12px] font-medium text-ink';
 ---
 
-<Base title="Pedir una demo">
+<Base
+  title="Pedir una demo"
+  description="Agendá una demo de OpenSale: te mostramos el ERP, el punto de venta y el reparto trabajando con datos parecidos a los de tu negocio. Sin compromiso."
+  breadcrumbs={[
+    { nombre: 'Inicio', href: '/' },
+    { nombre: 'Pedir una demo', href: '/demo' },
+  ]}
+>
   <AnnouncementBar />
   <Header client:load />
 

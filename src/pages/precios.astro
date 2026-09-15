@@ -12,6 +12,7 @@ import AnnouncementBar from '../components/AnnouncementBar.astro';
 import Header from '../components/react/Header';
 import Cierre from '../components/Cierre.astro';
 import { planes, grupos } from '../data/planes';
+import { aplicacion } from '../lib/schema';
 
 /** Ver Pricing.astro: el ERP cobra solo en CLP, el dolar es referencial. */
 const CLP_POR_USD = 950;
@@ -33,7 +34,15 @@ const DESTACADO = 'growth';
 const columnas = [...escalera, routes];
 ---
 
-<Base title="Precios">
+<Base
+  title="Precios"
+  description="Planes de OpenSale desde $0 al mes. Compará Starter, Business, Growth, Routes y Enterprise: usuarios, productos, sucursales y módulos incluidos en cada uno."
+  breadcrumbs={[
+    { nombre: 'Inicio', href: '/' },
+    { nombre: 'Precios', href: '/precios' },
+  ]}
+  schema={[aplicacion()]}
+>
   <AnnouncementBar />
   <Header client:load />
 

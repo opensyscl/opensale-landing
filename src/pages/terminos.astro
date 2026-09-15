@@ -130,7 +130,14 @@ const limites = planes.map((p) => ({
 }));
 ---
 
-<Base title="Términos y condiciones">
+<Base
+  title="Términos y condiciones"
+  description="Condiciones de uso de OpenSale: planes y cobro mensual, período de gracia, límites por plan, tratamiento de datos y responsabilidades de cada parte."
+  breadcrumbs={[
+    { nombre: 'Inicio', href: '/' },
+    { nombre: 'Términos y condiciones', href: '/terminos' },
+  ]}
+>
   <AnnouncementBar />
   <Header client:load />
 

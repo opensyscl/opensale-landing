@@ -1,7 +1,8 @@
 {
   "name": "OpenSale",
   "short_name": "OpenSale",
-  "description": "Landing de OpenSale.",
+  "description": "ERP y punto de venta para pymes: pedidos, inventario, caja y facturación en un solo lugar.",
+  "lang": "es-CL",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fbfaf6",

@@ -2,13 +2,34 @@
 import '../styles/global.css';
 import { site } from '../config/site';
 import Footer from '../components/Footer.astro';
+import Seo from '../components/seo/Seo.astro';
+import type { Miga } from '../lib/schema';
 
 interface Props {
   title?: string;
   description?: string;
+  /** Saca la pagina del indice. Ver Seo.astro. */
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+  ogImage?: string;
+  breadcrumbs?: Miga[];
+  /** Nodos extra para el @graph de JSON-LD. */
+  schema?: object[];
+  /** Las pantallas de cuenta traen su propio pie. */
+  footer?: boolean;
 }
 
-const { title, description = site.description } = Astro.props;
+const {
+  title,
+  description = site.description,
+  noindex = false,
+  ogType,
+  ogImage,
+  breadcrumbs,
+  schema,
+  footer = true,
+} = Astro.props;
+
 const pageTitle = title ? site.titleTemplate.replace('%s', title) : site.defaultTitle;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? site.siteUrl).toString();
 ---
@@ -18,28 +39,32 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? site.siteUrl).toStri
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{pageTitle}</title>
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
     <meta name="theme-color" content={site.themeColor} />
+
+    <Seo
+      title={pageTitle}
+      description={description}
+      canonical={canonical}
+      noindex={noindex}
+      ogType={ogType}
+      ogImage={ogImage}
+      breadcrumbs={breadcrumbs}
+      schema={schema}
+    />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
+    {/*
+      Solo los dos pesos que usa el header, que es lo primero que se pinta.
+      Precargar los seis empuja el LCP para atras en vez de adelantarlo.
+    */}
     <link rel="preload" href="/fonts/onest-500.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/onest-400.woff2" as="font" type="font/woff2" crossorigin />
-
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content={site.siteName} />
-    <meta property="og:title" content={pageTitle} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
-    <meta property="og:locale" content={site.locale} />
-    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <slot />
-    <Footer />
+    {footer && <Footer />}
   </body>
 </html>
