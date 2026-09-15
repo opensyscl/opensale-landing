@@ -2,17 +2,20 @@
 /**
  * Sección de features "Tres formas en que OpenSale ordena tus ventas"
  * (replica de la sección de 3 columnas del template Solva).
- * Cada tarjeta: bloque visual (fondo de flores + mini-mockup HTML) + título + bajada.
+ * Cada tarjeta: bloque visual + mini-mockup HTML encima + título + bajada.
+ *
+ * Ventas e Inventario llevan captura real del ERP de fondo; Facturación sigue
+ * con la acuarela porque esa pantalla no existe fotografiada en el repo.
  */
 const cards = [
   {
-    bg: '/images/features/card-1.png',
+    bg: '/images/features/venta.webp',
     title: 'Cerrá ventas en segundos',
     body: 'Cargá pedidos y cobrá al instante, sin planillas ni idas y vueltas.',
     mock: 'venta' as const,
   },
   {
-    bg: '/images/features/card-2.png',
+    bg: '/images/features/inventario.webp',
     title: 'Tu inventario siempre al día',
     body: 'El stock se actualiza solo con cada venta y compra, en tiempo real.',
     mock: 'inventario' as const,
@@ -51,6 +54,10 @@ const stock = [
         {/* Bloque visual */}
         <div class="relative flex h-[336px] w-full items-center justify-center overflow-hidden rounded-xl p-6">
           <img src={c.bg} alt="" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover" />
+          {/* Velo: el mini-panel es blanco y sin esto se pierde contra la captura. */}
+          {c.bg.endsWith('.webp') && (
+            <span class="absolute inset-0 bg-ink/25" aria-hidden="true"></span>
+          )}
 
           {/* Mini-mockup */}
           <div class="relative z-10 w-full max-w-[288px]">

@@ -4,9 +4,21 @@
  * template Solva): tres tarjetas que se apilan al scrollear, cada una con la
  * acuarela y un mini-panel flotante a la izquierda y el texto a la derecha.
  *
- * El apilado es CSS puro: cada tarjeta es sticky con un top un poco mayor que
- * la anterior, asi la de arriba asoma por el borde cuando la tapa la siguiente.
- * Sin JS de por medio.
+ * El apilado es CSS: cada tarjeta es sticky con un top un poco mayor que la
+ * anterior, asi la de arriba asoma por el borde cuando la tapa la siguiente.
+ * Funciona sin JS.
+ *
+ * Las tres comparten UN contenedor alto. Eso no es un detalle: un sticky solo
+ * se pega mientras dura su bloque contenedor, asi que si cada tarjeta tuviera
+ * su propio wrapper se soltaria antes de que la siguiente alcance a taparla —
+ * con tarjetas de 382px la cuenta no cierra nunca.
+ *
+ * El gap de 34vh entre ellas es el recorrido: lo que se scrollea mientras la de
+ * abajo esta pegada y la siguiente le trepa encima.
+ *
+ * Encima, motion le agrega el gesto: la tarjeta que esta siendo tapada se
+ * encoge y se apaga. Eso es progresivo — si el JS no carga, el apilado sigue
+ * andando igual.
  */
 import { site } from '../config/site';
 
@@ -73,10 +85,10 @@ const margenes = [
     </h2>
 
     {/* Tarjetas apiladas */}
-    <div class="mt-10 flex flex-col gap-6 pb-16 lg:pb-20">
+    <div class="mt-10 flex flex-col gap-6 pb-16 lg:gap-[34vh] lg:pb-20">
       {beneficios.map((b) => (
         <div class={`lg:sticky ${b.offset}`}>
-          <div class="grano grid grid-cols-1 overflow-hidden rounded-3xl border border-border bg-[#f4f2ec] lg:grid-cols-2">
+          <div class="tarjeta grano grid grid-cols-1 overflow-hidden rounded-3xl border border-border bg-[#f4f2ec] lg:grid-cols-2">
             {/* Izquierda: acuarela con el mini-panel encima */}
             <div class="relative flex min-h-[300px] items-center justify-center overflow-hidden p-6 lg:min-h-[380px]">
               <img src={b.fondo} alt="" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover" />
@@ -173,3 +185,77 @@ const margenes = [
     </div>
   </div>
 </section>
+
+<style>
+  /* Se hunde bajo la siguiente: por eso encoge desde arriba y no desde el centro. */
+  .tarjeta {
+    transform-origin: top center;
+    will-change: transform, opacity;
+  }
+</style>
+
+<script>
+  /*
+   * La tarjeta que queda abajo se encoge y se apaga mientras la siguiente le
+   * trepa encima. Es scroll-linked puro: manda la posicion, no hay duracion.
+   *
+   * El avance se mide con la tarjeta SIGUIENTE: de cuando asoma por el borde
+   * inferior a cuando llega a su tope pegajoso, que es el momento exacto en que
+   * termina de taparla. No se mide un wrapper propio porque las tres comparten
+   * contenedor —ver el comentario de arriba— y porque el rect de un sticky
+   * viene corrido por su propio pegado.
+   *
+   * La ultima no se anima: no hay nada que la tape.
+   */
+  const quieto = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const escritorio = window.matchMedia('(min-width: 1024px)');
+
+  const seccion = document.getElementById('por-que');
+  const tarjetas = seccion
+    ? [...seccion.querySelectorAll<HTMLElement>('.tarjeta')]
+    : [];
+
+  const ESCALA_MIN = 0.94;
+  const OPACIDAD_MIN = 0.55;
+
+  const pintar = () => {
+    const alto = window.innerHeight;
+
+    tarjetas.forEach((tarjeta, i) => {
+      const siguiente = tarjetas[i + 1];
+
+      if (!siguiente || quieto.matches || !escritorio.matches) {
+        tarjeta.style.transform = '';
+        tarjeta.style.opacity = '';
+        return;
+      }
+
+      // Donde se detiene la siguiente cuando se pega. De ahi sale el final.
+      const tope = parseFloat(getComputedStyle(siguiente.parentElement!).top) || 0;
+      const desde = alto;
+      const hasta = tope;
+
+      const arriba = siguiente.getBoundingClientRect().top;
+      const avance = Math.min(1, Math.max(0, (desde - arriba) / (desde - hasta)));
+
+      tarjeta.style.transform = `scale(${1 - (1 - ESCALA_MIN) * avance})`;
+      tarjeta.style.opacity = String(1 - (1 - OPACIDAD_MIN) * avance);
+    });
+  };
+
+  /*
+   * Se pinta directo, sin coalescer con requestAnimationFrame. El rAF parece
+   * gratis pero mete un flag de "hay una pasada pendiente", y si el rAF no
+   * corre —pestaña en segundo plano, o un navegador que lo estrangula— el flag
+   * queda en true y el handler traga todos los scrolls para siempre. Medir tres
+   * rects por evento es mas barato que ese riesgo; el navegador ya limita los
+   * scroll pasivos a uno por cuadro.
+   */
+  if (tarjetas.length) {
+    pintar();
+    window.addEventListener('scroll', pintar, { passive: true });
+    window.addEventListener('resize', pintar);
+    escritorio.addEventListener('change', pintar);
+    quieto.addEventListener('change', pintar);
+  }
+</script>
