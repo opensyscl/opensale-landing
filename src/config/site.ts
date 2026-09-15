@@ -75,11 +75,13 @@ export const nav = {
       { label: 'Como funciona', href: '/#como-funciona', desc: 'El recorrido completo, de punta a punta.' },
       { label: 'Automatizaciones', href: '/#automatizaciones', desc: 'Reglas que trabajan solas.' },
       { label: 'Reportes', href: '/#reportes', desc: 'Numeros claros, sin planillas.' },
+      { label: 'Las apps', href: '/#apps', desc: 'Donde trabaja cada uno de tu equipo.' },
       { label: 'Documentación', href: site.docsUrl, desc: 'Guias y referencia tecnica.' },
     ],
   },
   links: [
     { label: 'Integraciones', href: '/#integraciones' },
+    { label: 'Por rubro', href: '/para' },
     { label: 'Precios', href: '/precios' },
   ],
   signIn: { label: 'Iniciar sesión', href: '/ingresar' },

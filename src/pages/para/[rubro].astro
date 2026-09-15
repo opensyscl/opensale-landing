@@ -1,0 +1,185 @@
+---
+/**
+ * Una pagina por rubro.
+ *
+ * Existe para la busqueda con intencion de compra: nadie escribe "ERP" en
+ * Google, escribe "sistema punto de venta ferreteria". La home no puede
+ * responderle a los siete rubros a la vez sin volverse generica.
+ *
+ * Todo el contenido sale de data/rubros.ts, que documenta por que son siete y
+ * no dieciseis. Ver ahi antes de agregar uno.
+ */
+import Base from '../../layouts/Base.astro';
+import AnnouncementBar from '../../components/AnnouncementBar.astro';
+import Header from '../../components/react/Header';
+import Sellos from '../../components/Sellos.astro';
+import Cierre from '../../components/Cierre.astro';
+import { rubros } from '../../data/rubros';
+import { planes } from '../../data/planes';
+import { aplicacion } from '../../lib/schema';
+
+export function getStaticPaths() {
+  return rubros.map((r) => ({ params: { rubro: r.slug }, props: { r } }));
+}
+
+const { r } = Astro.props;
+const plan = planes.find((p) => p.nombre === r.plan);
+const otros = rubros.filter((o) => o.slug !== r.slug);
+const miles = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+---
+
+<Base
+  title={`Sistema para ${r.nombre.toLowerCase()}`}
+  description={r.descripcion}
+  breadcrumbs={[
+    { nombre: 'Inicio', href: '/' },
+    { nombre: 'Por rubro', href: '/para' },
+    { nombre: r.nombre, href: `/para/${r.slug}` },
+  ]}
+  schema={[aplicacion()]}
+>
+  <AnnouncementBar />
+  <Header client:load />
+
+  <main>
+    {/* Encabezado */}
+    <section class="bg-canvas">
+      <div class="mx-auto w-full max-w-[1200px] px-5 pt-14 pb-10 md:px-10 lg:pt-20">
+        <nav aria-label="Migas de pan" class="flex items-center gap-2 text-[13px] leading-none text-muted">
+          <a href="/" class="transition-colors duration-200 hover:text-ink">Inicio</a>
+          <span aria-hidden="true">/</span>
+          <a href="/para" class="transition-colors duration-200 hover:text-ink">Por rubro</a>
+          <span aria-hidden="true">/</span>
+          <span class="text-ink">{r.nombre}</span>
+        </nav>
+
+        <h1 class="mt-6 max-w-[720px] font-serif text-[38px] leading-[1.05] font-light tracking-[-0.05em] text-ink sm:text-[46px] lg:text-[52px]">
+          {r.titular}
+        </h1>
+        <p class="mt-5 max-w-[540px] text-[17px] leading-[1.45] text-muted">{r.descripcion}</p>
+
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a
+            href="/registro"
+            class="boton-relieve inline-flex h-11 items-center justify-center rounded-lg bg-accent-deep px-4 text-[14px] font-medium text-canvas transition-colors duration-200 hover:bg-accent-deep/90"
+          >
+            Empezar gratis
+          </a>
+          <a
+            href="/demo"
+            class="inline-flex h-11 items-center justify-center rounded-lg border border-border px-4 text-[14px] font-medium text-ink transition-colors duration-200 hover:bg-ink/[0.04]"
+          >
+            Pedir una demo
+          </a>
+        </div>
+      </div>
+    </section>
+
+    {/* El dolor, en las palabras del rubro */}
+    <section class="bg-canvas">
+      <div class="mx-auto w-full max-w-[1200px] px-5 pb-16 md:px-10">
+        <div class="rounded-3xl border border-border bg-surface p-6 lg:p-10">
+          <h2 class="font-serif text-[22px] leading-[1.15] font-light tracking-[-0.04em] text-ink lg:text-[26px]">
+            Si tenés {r.nombre.toLowerCase()}, esto te suena.
+          </h2>
+          <ul class="mt-6 grid grid-cols-1 gap-x-10 gap-y-3 md:grid-cols-2">
+            {r.dolores.map((d) => (
+              <li class="flex items-start gap-3 text-[15px] leading-[1.5] text-muted">
+                <span class="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-danger/70" aria-hidden="true"></span>
+                {d}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    {/* Que lo resuelve */}
+    <section class="bg-canvas">
+      <div class="mx-auto w-full max-w-[1200px] px-5 pb-16 md:px-10">
+        <h2 class="max-w-[680px] font-serif text-[26px] leading-[1.05] font-light tracking-[-0.05em] text-ink sm:text-[30px] lg:text-[36px]">
+          Qué hace OpenSale<br /><span class="text-muted/60">con cada una de esas.</span>
+        </h2>
+
+        <ul class="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2">
+          {r.soluciones.map((s) => (
+            <li class="flex flex-col overflow-hidden rounded-3xl border border-border bg-surface">
+              <div class="flex flex-col gap-2 p-6">
+                <h3 class="text-[17px] leading-[1.25] font-medium tracking-[-0.02em] text-ink">{s.titulo}</h3>
+                <p class="text-[14px] leading-[1.5] text-muted">{s.cuerpo}</p>
+              </div>
+
+              {s.pantalla && (
+                <div class="grano relative mx-6 h-[170px] overflow-hidden rounded-t-xl border-x border-t border-border bg-surface">
+                  <img
+                    src={s.pantalla}
+                    width="1440"
+                    height="900"
+                    loading="lazy"
+                    decoding="async"
+                    alt={`${s.titulo} en OpenSale`}
+                    class="absolute top-0 left-0 w-[160%] max-w-none"
+                  />
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    {/* Plan recomendado */}
+    {plan && (
+      <section class="bg-canvas">
+        <div class="mx-auto w-full max-w-[1200px] px-5 pb-16 md:px-10">
+          <div class="flex flex-col items-start gap-6 rounded-3xl border border-border bg-surface p-6 lg:flex-row lg:items-center lg:justify-between lg:p-10">
+            <div>
+              <span class="text-[11px] leading-none font-medium tracking-wide text-muted uppercase">
+                El plan que le calza a este rubro
+              </span>
+              <h2 class="mt-3 text-[22px] leading-[1.2] font-medium tracking-[-0.02em] text-ink">
+                Plan {plan.nombre}
+                <span class="ml-2 text-[15px] font-normal text-muted">
+                  {plan.precio === 0 ? 'gratis' : `$${miles(plan.precio)}/mes`}
+                </span>
+              </h2>
+              <p class="mt-2 max-w-[480px] text-[14px] leading-[1.5] text-muted">
+                {plan.bajada}. {plan.limites.usuarios} usuarios, {plan.limites.productos} productos
+                y {plan.limites.sucursales} sucursales.
+              </p>
+            </div>
+
+            <a
+              href="/precios"
+              class="inline-flex h-11 shrink-0 items-center justify-center rounded-lg border border-border px-4 text-[14px] font-medium text-ink transition-colors duration-200 hover:bg-ink/[0.04]"
+            >
+              Ver todos los planes
+            </a>
+          </div>
+        </div>
+      </section>
+    )}
+
+    {/* Enlazado interno: sin esto cada rubro seria una isla */}
+    <section class="bg-canvas">
+      <div class="mx-auto w-full max-w-[1200px] px-5 pb-16 md:px-10">
+        <h2 class="text-[13px] leading-none font-medium tracking-wide text-muted uppercase">Otros rubros</h2>
+        <ul class="mt-4 flex flex-wrap gap-2">
+          {otros.map((o) => (
+            <li>
+              <a
+                href={`/para/${o.slug}`}
+                class="inline-flex h-9 items-center rounded-lg border border-border bg-surface px-3.5 text-[14px] text-muted transition-colors duration-200 hover:border-border hover:bg-ink/[0.03] hover:text-ink"
+              >
+                {o.nombre}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <Sellos />
+    <Cierre />
+  </main>
+</Base>

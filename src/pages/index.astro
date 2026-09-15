@@ -4,19 +4,22 @@ import AnnouncementBar from '../components/AnnouncementBar.astro';
 import Header from '../components/react/Header';
 import Hero from '../components/Hero.astro';
 import Features from '../components/Features.astro';
+import Apps from '../components/Apps.astro';
 import Producto from '../components/Producto.astro';
 import PorQue from '../components/PorQue.astro';
 import Integraciones from '../components/Integraciones.astro';
 import Pricing from '../components/Pricing.astro';
+import Faq from '../components/Faq.astro';
 import Sellos from '../components/Sellos.astro';
 import Cierre from '../components/Cierre.astro';
 import FeatureModal from '../components/FeatureModal.astro';
-import { aplicacion } from '../lib/schema';
+import { aplicacion, preguntas } from '../lib/schema';
+import { faq } from '../data/faq';
 ---
 
 <Base
   description="OpenSale centraliza pedidos, inventario, caja y facturación en un solo lugar y automatiza lo repetitivo, para que tu equipo venda en vez de cargar planillas."
-  schema={[aplicacion()]}
+  schema={[aplicacion(), preguntas(faq)]}
   preloadImage="/images/producto/panel.webp"
 >
   <AnnouncementBar />
@@ -25,10 +28,12 @@ import { aplicacion } from '../lib/schema';
   <main id="inicio">
     <Hero />
     <Features />
+    <Apps />
     <Producto />
     <PorQue />
     <Integraciones />
     <Pricing />
+    <Faq />
     <Sellos />
     <Cierre />
   </main>

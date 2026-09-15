@@ -7,6 +7,7 @@
  * quien llego hasta abajo, y de paso le da al buscador los mismos destinos.
  */
 import { site, nav } from '../config/site';
+import { rubros } from '../data/rubros';
 
 const anio = new Date().getFullYear();
 
@@ -23,10 +24,16 @@ const columnas: { titulo: string; links: Link[] }[] = [
     ],
   },
   {
+    titulo: 'Por rubro',
+    links: rubros.slice(0, 5).map((r) => ({ label: r.nombre, href: `/para/${r.slug}` })),
+  },
+  {
     titulo: 'Recursos',
     links: [
       { label: 'Documentación', href: site.docsUrl, externo: true },
       { label: 'Integraciones', href: '/#integraciones' },
+      { label: 'Preguntas frecuentes', href: '/#preguntas' },
+      { label: 'Todos los rubros', href: '/para' },
       { label: 'Contacto', href: `mailto:${site.email}` },
     ],
   },

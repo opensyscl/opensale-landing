@@ -6,8 +6,9 @@
  * contenido como spam y puede sacar los resultados enriquecidos del sitio
  * entero, no solo de la pagina que miente.
  *
- * Por eso no hay FAQPage: no hay seccion de preguntas en el sitio. Y no hay
- * AggregateRating ni Review: no hay testimonios reales todavia.
+ * `preguntas()` se puede usar desde que existe la seccion visible de FAQ, y
+ * lee de la misma lista que ella. No hay AggregateRating ni Review: no hay
+ * testimonios reales todavia.
  */
 import { site, marca } from '../config/site';
 import { planes } from '../data/planes';
@@ -99,6 +100,24 @@ export function aplicacion() {
         },
       })),
     },
+  };
+}
+
+/**
+ * Preguntas frecuentes.
+ *
+ * Solo vale si las mismas preguntas y respuestas estan visibles en la pagina.
+ * Por eso lee de data/faq.ts, que es de donde tambien se pinta la seccion: no
+ * hay forma de que una diga una cosa y la otra, otra.
+ */
+export function preguntas(items: { p: string; r: string }[]) {
+  return {
+    '@type': 'FAQPage',
+    mainEntity: items.map((f) => ({
+      '@type': 'Question',
+      name: f.p,
+      acceptedAnswer: { '@type': 'Answer', text: f.r },
+    })),
   };
 }
 
