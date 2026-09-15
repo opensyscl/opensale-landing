@@ -17,6 +17,14 @@ interface Props {
   schema?: object[];
   /** Las pantallas de cuenta traen su propio pie. */
   footer?: boolean;
+  /**
+   * Imagen grande que se ve sin hacer scroll. Se precarga para que el navegador
+   * la pida junto con el HTML y no despues de parsear el CSS.
+   *
+   * Va una sola por pagina: precargar de mas compite con el propio LCP y lo
+   * empeora en vez de mejorarlo.
+   */
+  preloadImage?: string;
 }
 
 const {
@@ -28,6 +36,7 @@ const {
   breadcrumbs,
   schema,
   footer = true,
+  preloadImage,
 } = Astro.props;
 
 const pageTitle = title ? site.titleTemplate.replace('%s', title) : site.defaultTitle;
@@ -62,6 +71,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? site.siteUrl).toStri
     */}
     <link rel="preload" href="/fonts/onest-500.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/onest-400.woff2" as="font" type="font/woff2" crossorigin />
+
+    {preloadImage && (
+      <link rel="preload" href={preloadImage} as="image" type="image/webp" fetchpriority="high" />
+    )}
   </head>
   <body>
     <slot />

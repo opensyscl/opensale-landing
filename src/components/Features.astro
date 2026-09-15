@@ -6,22 +6,29 @@
  *
  * Ventas e Inventario llevan captura real del ERP de fondo; Facturación sigue
  * con la acuarela porque esa pantalla no existe fotografiada en el repo.
+ *
+ * `velo` es explicito y no se deduce del formato del archivo: solo las capturas
+ * lo necesitan, porque el mini-panel es blanco y se pierde encima de ellas. La
+ * acuarela ya es suficientemente clara.
  */
 const cards = [
   {
     bg: '/images/features/venta.webp',
+    velo: true,
     title: 'Cerrá ventas en segundos',
     body: 'Cargá pedidos y cobrá al instante, sin planillas ni idas y vueltas.',
     mock: 'venta' as const,
   },
   {
     bg: '/images/features/inventario.webp',
+    velo: true,
     title: 'Tu inventario siempre al día',
     body: 'El stock se actualiza solo con cada venta y compra, en tiempo real.',
     mock: 'inventario' as const,
   },
   {
-    bg: '/images/features/card-3.png',
+    bg: '/images/features/card-3.webp',
+    velo: false,
     title: 'Factura sin fricción',
     body: 'Emití comprobantes automáticamente y mandálos al cliente al confirmar.',
     mock: 'factura' as const,
@@ -53,9 +60,18 @@ const stock = [
       <div class="flex w-full max-w-[360px] flex-1 flex-col items-start gap-4">
         {/* Bloque visual */}
         <div class="relative flex h-[336px] w-full items-center justify-center overflow-hidden rounded-xl p-6">
-          <img src={c.bg} alt="" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover" />
+          <img
+            src={c.bg}
+            width={c.bg.includes("card-") ? 1024 : 760}
+            height={c.bg.includes("card-") ? 683 : 591}
+            loading="lazy"
+            decoding="async"
+            alt=""
+            aria-hidden="true"
+            class="absolute inset-0 h-full w-full object-cover"
+          />
           {/* Velo: el mini-panel es blanco y sin esto se pierde contra la captura. */}
-          {c.bg.endsWith('.webp') && (
+          {c.velo && (
             <span class="absolute inset-0 bg-ink/25" aria-hidden="true"></span>
           )}
 

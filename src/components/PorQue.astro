@@ -37,7 +37,7 @@ const beneficios: Beneficio[] = [
     titulo: 'Una venta, un solo movimiento.',
     cuerpo:
       'Cargás el pedido y con eso baja el stock, sale la boleta y se actualiza la caja. No hay que anotar lo mismo en tres lados.',
-    fondo: '/images/features/card-1.png',
+    fondo: '/images/features/card-1.webp',
     panel: 'venta',
     offset: 'lg:top-[100px]',
   },
@@ -45,7 +45,7 @@ const beneficios: Beneficio[] = [
     titulo: 'La caja cuadra sola.',
     cuerpo:
       'Al cerrar, el sistema compara lo que declaraste contra lo que registró durante el día y te muestra la diferencia al peso.',
-    fondo: '/images/features/card-2.png',
+    fondo: '/images/features/card-2.webp',
     panel: 'caja',
     offset: 'lg:top-[116px]',
   },
@@ -53,7 +53,7 @@ const beneficios: Beneficio[] = [
     titulo: 'Sabés qué te deja plata.',
     cuerpo:
       'El ranking ordena por margen y no por unidades vendidas. Lo que más sale no siempre es lo que más rinde.',
-    fondo: '/images/features/card-3.png',
+    fondo: '/images/features/card-3.webp',
     panel: 'margen',
     offset: 'lg:top-[132px]',
   },
@@ -91,7 +91,16 @@ const margenes = [
           <div class="tarjeta grano grid grid-cols-1 overflow-hidden rounded-3xl border border-border bg-[#f4f2ec] lg:grid-cols-2">
             {/* Izquierda: acuarela con el mini-panel encima */}
             <div class="relative flex min-h-[300px] items-center justify-center overflow-hidden p-6 lg:min-h-[380px]">
-              <img src={b.fondo} alt="" aria-hidden="true" class="absolute inset-0 h-full w-full object-cover" />
+              <img
+                src={b.fondo}
+                width="1024"
+                height="683"
+                loading="lazy"
+                decoding="async"
+                alt=""
+                aria-hidden="true"
+                class="absolute inset-0 h-full w-full object-cover"
+              />
 
               <div
                 class="relative z-[2] w-full max-w-[300px] rounded-xl bg-surface p-4 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_12px_34px_rgba(0,0,0,0.14),0_0_0_1px_rgba(28,26,21,0.06)]"

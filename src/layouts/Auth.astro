@@ -81,7 +81,10 @@ const { title, encabezado, bajada, pie = 'terminos' } = Astro.props;
     {/* Derecha: la acuarela con la captura encima */}
     <div class="grano relative hidden overflow-hidden rounded-3xl lg:block lg:w-1/2">
       <img
-        src="/images/hero/hero-flowers.png"
+        src="/images/hero/hero-flowers.webp"
+        width="896"
+        height="896"
+        decoding="async"
         alt=""
         aria-hidden="true"
         class="absolute inset-0 h-full w-full object-cover"
@@ -90,6 +93,7 @@ const { title, encabezado, bajada, pie = 'terminos' } = Astro.props;
         src="/images/producto/panel.webp"
         width="1600"
         height="792"
+        loading="lazy"
         decoding="async"
         alt="Panel de control de OpenSale"
         class="absolute top-1/2 left-[4%] z-[2] w-[165%] max-w-none -translate-y-1/2 rounded-xl shadow-[0_2px_6px_rgba(0,0,0,0.06),0_18px_50px_rgba(0,0,0,0.18),0_0_0_1px_rgba(28,26,21,0.06)]"

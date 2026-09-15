@@ -74,7 +74,10 @@ const logos = [
       <div class="relative h-[360px] w-full overflow-hidden rounded-2xl border-r border-b border-border sm:h-[460px] lg:h-[560px] lg:w-[55%]">
         {/* Fondo de flores */}
         <img
-          src="/images/hero/hero-flowers.png"
+          src="/images/hero/hero-flowers.webp"
+          width="896"
+          height="896"
+          decoding="async"
           alt=""
           aria-hidden="true"
           class="absolute inset-0 h-full w-full object-cover"
@@ -83,12 +86,15 @@ const logos = [
           Captura real del Panel de Control del ERP, flotando y desbordando a la
           derecha. Reemplaza al mockup dibujado a mano que habia antes: en el
           hero conviene mostrar el producto de verdad.
+
+          Es el LCP de la home: va con fetchpriority alto y precargado desde Base.
         */}
         <img
           src="/images/producto/panel.webp"
           width="1600"
           height="792"
           decoding="async"
+          fetchpriority="high"
           alt="Panel de control de OpenSale con ingresos, margen, ventas por hora y estado de caja"
           class="absolute top-16 left-16 w-[975px] max-w-none rounded-[10px] shadow-[0_1px_3px_rgba(0,0,0,0.03),0_4px_16px_rgba(0,0,0,0.04),0_0_0_8px_rgba(255,255,255,0.5)]"
         />
