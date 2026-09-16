@@ -57,9 +57,9 @@
   --color-primary-foreground: #fbfaf6;
   --color-muted: #56524a;
   --color-border: #e4e4e1;
-  --color-accent: #2f8b91;
-  /* Fondo de boton: 5,6:1 con el texto en canvas. El accent normal da 3,9. */
-  --color-accent-deep: #256e73;
+  --color-accent: #116DFB;
+  /* Azul del ERP. Fondo de boton: 5,6:1 con el texto en canvas; el accent da 4,4. */
+  --color-accent-deep: #0B5ED7;
   --color-success: #3f9e6f;
   --color-warning: #c2872a;
   --color-danger: #b04b34;
