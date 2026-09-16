@@ -15,7 +15,7 @@ const SIN_INDEXAR = ['/ingresar', '/registro', '/recuperar', '/revisa-tu-correo'
 // https://astro.build/config
 export default defineConfig({
   // Tiene que coincidir con site.siteUrl de src/config/site.ts.
-  site: 'https://opensale.example',
+  site: 'https://erp.opensys.cl',
   integrations: [
     react(),
     sitemap({
@@ -24,7 +24,7 @@ export default defineConfig({
       lastmod: new Date(),
       serialize(item) {
         // La home primero; precios es la que convierte y va detras.
-        if (item.url.replace(/\/$/, '').endsWith('opensale.example')) return { ...item, priority: 1.0 };
+        if (item.url.replace(/\/$/, '').endsWith('erp.opensys.cl')) return { ...item, priority: 1.0 };
         if (item.url.includes('/precios')) return { ...item, priority: 0.9 };
         if (item.url.includes('/demo')) return { ...item, priority: 0.8 };
         if (item.url.includes('/terminos')) return { ...item, priority: 0.3, changefreq: 'yearly' };

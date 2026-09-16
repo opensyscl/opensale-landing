@@ -7,5 +7,11 @@ Disallow: /ingresar
 Disallow: /registro
 Disallow: /recuperar
 Disallow: /revisa-tu-correo
+# La app (Laravel) vive en el mismo dominio: que el rastreo no entre.
+Disallow: /tenant/
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /api/
 
-Sitemap: https://opensale.example/sitemap-index.xml
+Sitemap: https://erp.opensys.cl/sitemap-index.xml

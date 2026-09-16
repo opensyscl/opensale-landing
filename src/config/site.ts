@@ -9,7 +9,7 @@ export const site = {
    * sirve: Google indexa lo que dice el canonical, no donde esta alojado.
    * Cambiar aca y en `site:` de astro.config.mjs, que tienen que coincidir.
    */
-  siteUrl: 'https://opensale.example',
+  siteUrl: 'https://erp.opensys.cl',
   siteName: 'OpenSale',
   defaultTitle: 'OpenSale — Toda tu operación de ventas, en un solo lugar',
   titleTemplate: '%s — OpenSale',
@@ -26,12 +26,16 @@ export const site = {
   locale: 'es_CL',
   lang: 'es-CL',
   themeColor: '#fbfaf6',
-  email: 'hola@opensale.example',
+  email: 'contacto@opensys.cl',
   /**
    * Donde vive la app. PLACEHOLDER: apunta al dominio real antes de publicar,
    * de aca salen el boton de registro del cierre y el "Iniciar sesion".
    */
-  appUrl: 'https://app.opensale.example',
+  /**
+   * PUBLIC_APP_URL viene de .env.development (ERP local) o del build de
+   * produccion; si falta, el ERP real.
+   */
+  appUrl: (import.meta.env.PUBLIC_APP_URL as string | undefined)?.replace(/\/$/, '') ?? 'https://erp.opensys.cl',
   /** Documentacion publica del producto. */
   docsUrl: 'https://docs.erp.opensys.cl',
   /**
@@ -52,7 +56,7 @@ export const site = {
  */
 export const marca = {
   /** PLACEHOLDER: razon social real antes de publicar. */
-  legalName: 'OpenSys SpA',
+  legalName: 'OpenSys Latam Group SpA',
   logo: '/favicon.svg',
   /** Pais de operacion. El ERP cobra en CLP y emite ante el SII. */
   country: 'CL',
